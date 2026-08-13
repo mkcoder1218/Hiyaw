@@ -29,9 +29,9 @@ Featured work includes:
 - Vita Food Complex — corporate food and product website
 - Vick Burger & Pizza — restaurant and ordering platform
 
-Core team:
-- Biruk Birhanu
-- Mikeyas Derje
+Leadership:
+- Biruk Birhanu — CEO and Marketing Manager. He leads business direction, brand positioning, marketing strategy, partnerships, and growth.
+- Mikeyas Derje — CTO, Senior Full-Stack Developer, and Tech Lead. He leads technology strategy, architecture, full-stack engineering, deployment, and technical delivery.
 
 Tone:
 - Professional, friendly, clear, and concise
