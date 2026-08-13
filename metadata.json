@@ -1,6 +1,6 @@
 {
-  "name": "Hiyaw Technology's Portfolio",
-  "description": "A world-class tech portfolio for Hiyaw Technology's, an Ethiopian-powered innovation hub specializing in AI, software development, and digital transformation.",
+  "name": "Hyaw",
+  "description": "Hyaw is an Ethiopian technology team building modern websites, software platforms, and digital products for businesses.",
   "requestFramePermissions": [
     "camera",
     "microphone"
