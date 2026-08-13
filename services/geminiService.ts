@@ -1,32 +1,58 @@
+import { GoogleGenAI } from '@google/genai';
 
-import { GoogleGenAI, Type } from "@google/genai";
+const API_KEY = process.env.API_KEY || '';
 
-const API_KEY = process.env.API_KEY || "";
+type ChatHistoryItem = {
+  role: 'user' | 'model';
+  text: string;
+};
 
-export const getGeminiAmbassador = async (userPrompt: string, history: { role: 'user' | 'model', text: string }[]) => {
+export const getGeminiAmbassador = async (
+  userPrompt: string,
+  history: ChatHistoryItem[],
+) => {
   if (!API_KEY) {
-    throw new Error("API Key not found");
+    throw new Error('API Key not found');
   }
 
   const ai = new GoogleGenAI({ apiKey: API_KEY });
-  
+
   const systemInstruction = `
-    You are the AI Ambassador for "Hiyaw Technology's", a premier tech company based in Ethiopia and powered by talented Ethiopian engineers. 
-    Your tone is professional, innovative, and proud of Ethiopian heritage. 
-    Key company info:
-    - Specializations: AI/ML, FinTech (Zemen Pay), AgriTech (Gebere Connect), and Custom Enterprise Software.
-    - Values: Excellence, Ethiopian Innovation, Global Impact, Integrity.
-    - Location: Addis Ababa, Ethiopia.
-    - Our team is 100% Ethiopian-led and powered.
-    Respond concisely and encourage users to contact our sales team at hello@hiyaw.tech if they have specific business inquiries.
-  `;
+You are the AI Ambassador for Hyaw, an Ethiopian technology team based in Addis Ababa.
+
+Hyaw builds modern digital products, websites, business platforms, and software solutions.
+
+Featured work includes:
+- RedSea Mart — e-commerce
+- Little Paris Restaurant — restaurant website and digital customer experience
+- Glam Nest — beauty and salon digital experience
+- Vita Food Complex — corporate food and product website
+- Vick Burger & Pizza — restaurant and ordering platform
+
+Core team:
+- Biruk Birhanu
+- Mikeyas Derje
+
+Tone:
+- Professional, friendly, clear, and concise
+- Confident without exaggerating capabilities or inventing company facts
+- Proudly Ethiopian while remaining globally focused
+
+For specific business inquiries, encourage visitors to contact hello@hyaw.tech.
+`;
 
   try {
     const response = await ai.models.generateContent({
-      model: "gemini-3-flash-preview",
+      model: 'gemini-3-flash-preview',
       contents: [
-        ...history.map(h => ({ role: h.role === 'user' ? 'user' : 'model', parts: [{ text: h.text }] })),
-        { role: 'user', parts: [{ text: userPrompt }] }
+        ...history.map((item) => ({
+          role: item.role === 'user' ? 'user' : 'model',
+          parts: [{ text: item.text }],
+        })),
+        {
+          role: 'user',
+          parts: [{ text: userPrompt }],
+        },
       ],
       config: {
         systemInstruction,
@@ -36,9 +62,9 @@ export const getGeminiAmbassador = async (userPrompt: string, history: { role: '
       },
     });
 
-    return response.text || "I'm sorry, I couldn't process that. How else can I help you learn about Hiyaw Technology's?";
+    return response.text || "I'm sorry, I couldn't process that. How else can I help you learn about Hyaw?";
   } catch (error) {
-    console.error("Gemini API Error:", error);
-    return "The Hiyaw AI is currently undergoing maintenance. Please reach out via our contact form!";
+    console.error('Gemini API Error:', error);
+    return 'The Hyaw AI is currently unavailable. Please reach out through our contact form.';
   }
 };
