@@ -3,6 +3,22 @@ import { PROJECTS, SERVICES, TEAM } from './constants';
 import { Message } from './types';
 import { getGeminiAmbassador } from './services/geminiService';
 
+const LEADERSHIP_DETAILS: Record<
+  string,
+  { role: string; bio: string; focus: string[] }
+> = {
+  'Biruk Birhanu': {
+    role: 'CEO • Marketing Manager',
+    bio: "Leads Hyaw's business direction, brand positioning, marketing strategy, partnerships, and growth — connecting strong products with the people and businesses they are built to serve.",
+    focus: ['Business Strategy', 'Brand & Marketing', 'Growth & Partnerships'],
+  },
+  'Mikeyas Derje': {
+    role: 'CTO • Senior Full-Stack Developer • Tech Lead',
+    bio: "Leads Hyaw's technical direction and product delivery across architecture, backend systems, frontend experiences, deployment, and engineering execution.",
+    focus: ['Technology Strategy', 'Full-Stack Engineering', 'Architecture & Delivery'],
+  },
+};
+
 const scrollToSection = (id: string) => {
   const element = document.getElementById(id);
   if (!element) return;
@@ -400,33 +416,67 @@ export default function App() {
           </div>
         </section>
 
-        <section id="team" className="py-16 md:py-24 px-6 bg-black scroll-mt-24">
+        <section id="team" className="py-20 md:py-28 px-6 bg-black scroll-mt-24">
           <div className="max-w-7xl mx-auto">
-            <div className="text-center mb-12 md:mb-20">
+            <div className="text-center mb-12 md:mb-16 max-w-3xl mx-auto">
+              <span className="text-emerald-400 text-[10px] md:text-xs font-black uppercase tracking-[0.25em] mb-4 block">
+                Leadership
+              </span>
               <h2 className="text-3xl md:text-5xl font-bold mb-4">The Minds Behind Hyaw</h2>
-              <p className="text-gray-400 text-base md:text-lg">A focused team building products with purpose.</p>
+              <p className="text-gray-400 text-base md:text-lg leading-relaxed">
+                Business growth and engineering leadership working side by side — from strategy and brand to architecture, code, and delivery.
+              </p>
             </div>
 
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-10 md:gap-16 max-w-4xl mx-auto">
-              {TEAM.map((member) => (
-                <div key={member.id} className="text-center group">
-                  <div className="relative mb-6 inline-block">
-                    <div className="w-40 h-40 md:w-48 md:h-48 rounded-3xl overflow-hidden mx-auto glass p-2 md:group-hover:rotate-3 transition-all duration-500">
-                      <img
-                        src={member.image}
-                        alt={member.name}
-                        className="w-full h-full object-cover rounded-2xl"
-                        loading="lazy"
-                      />
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 md:gap-8 max-w-6xl mx-auto">
+              {TEAM.map((member) => {
+                const details = LEADERSHIP_DETAILS[member.name] ?? {
+                  role: member.role,
+                  bio: member.bio,
+                  focus: [],
+                };
+
+                return (
+                  <article
+                    key={member.id}
+                    className="glass rounded-[2rem] p-6 md:p-8 border border-white/10 group hover:bg-white/[0.04] hover:-translate-y-1 transition-all duration-300"
+                  >
+                    <div className="flex flex-col sm:flex-row gap-6 md:gap-8 items-center sm:items-start">
+                      <div className="shrink-0">
+                        <div className="w-40 h-40 md:w-44 md:h-44 rounded-3xl overflow-hidden glass p-2 group-hover:rotate-2 transition-transform duration-500">
+                          <img
+                            src={member.image}
+                            alt={member.name}
+                            className="w-full h-full object-cover rounded-2xl"
+                            loading="lazy"
+                          />
+                        </div>
+                      </div>
+
+                      <div className="flex-1 text-center sm:text-left min-w-0">
+                        <h3 className="text-2xl md:text-3xl font-bold mb-2">{member.name}</h3>
+                        <p className="text-emerald-400 font-bold uppercase tracking-[0.12em] text-[10px] md:text-xs leading-relaxed mb-4">
+                          {details.role}
+                        </p>
+                        <p className="text-gray-400 text-sm leading-relaxed mb-6">
+                          {details.bio}
+                        </p>
+
+                        <div className="flex flex-wrap justify-center sm:justify-start gap-2">
+                          {details.focus.map((item) => (
+                            <span
+                              key={item}
+                              className="px-3 py-1.5 rounded-full border border-white/10 bg-white/[0.03] text-[10px] md:text-xs font-semibold text-gray-300"
+                            >
+                              {item}
+                            </span>
+                          ))}
+                        </div>
+                      </div>
                     </div>
-                  </div>
-                  <h3 className="text-xl md:text-2xl font-bold mb-1">{member.name}</h3>
-                  <p className="text-emerald-400 font-bold uppercase tracking-widest text-[10px] md:text-xs mb-4">
-                    {member.role}
-                  </p>
-                  <p className="text-gray-400 text-xs md:text-sm max-w-xs mx-auto px-4">{member.bio}</p>
-                </div>
-              ))}
+                  </article>
+                );
+              })}
             </div>
           </div>
         </section>
