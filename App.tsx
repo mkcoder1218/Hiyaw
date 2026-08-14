@@ -3,6 +3,10 @@ import { PROJECTS, SERVICES, TEAM } from './constants';
 import { Message } from './types';
 import { getGeminiAmbassador } from './services/geminiService';
 
+const VISIBLE_PROJECTS = PROJECTS.filter(
+  (project) => project.title !== 'Vita Food Complex',
+);
+
 const LEADERSHIP_DETAILS: Record<
   string,
   { role: string; bio: string; focus: string[] }
@@ -338,11 +342,11 @@ export default function App() {
           <div className="max-w-7xl mx-auto">
             <SectionTitle
               title="Selected Projects"
-              subtitle="A selection of digital products and experiences we've built across commerce, hospitality, beauty, food, and customer services."
+              subtitle="A selection of digital products and experiences we've built across commerce, hospitality, beauty, and customer services."
             />
 
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6 md:gap-8">
-              {PROJECTS.map((project) => (
+              {VISIBLE_PROJECTS.map((project) => (
                 <div key={project.id} className="group relative rounded-3xl overflow-hidden glass border-none h-[300px] md:h-[400px]">
                   <img
                     src={project.image}
@@ -383,7 +387,7 @@ export default function App() {
 
                 <div className="grid grid-cols-2 gap-6 pt-4">
                   <div>
-                    <p className="text-2xl md:text-3xl font-black text-white">5</p>
+                    <p className="text-2xl md:text-3xl font-black text-white">{VISIBLE_PROJECTS.length}</p>
                     <p className="text-xs md:text-sm">Featured Projects</p>
                   </div>
                   <div>
