@@ -26,7 +26,6 @@ Featured work includes:
 - RedSea Mart — e-commerce
 - Little Paris Restaurant — restaurant website and digital customer experience
 - Glam Nest — beauty and salon digital experience
-- Vita Food Complex — corporate food and product website
 - Vick Burger & Pizza — restaurant and ordering platform
 
 Leadership:
