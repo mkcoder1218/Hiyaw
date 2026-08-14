@@ -189,6 +189,30 @@ const SectionTitle = ({ title, subtitle }: { title: string; subtitle: string }) 
   </div>
 );
 
+const TeamPortrait = ({ name, src }: { name: string; src: string }) => {
+  if (name === 'Biruk Birhanu' && src.endsWith('.svg')) {
+    return (
+      <object
+        data={src}
+        type="image/svg+xml"
+        aria-label={name}
+        className="w-full h-full rounded-2xl pointer-events-none"
+      >
+        <span className="sr-only">{name}</span>
+      </object>
+    );
+  }
+
+  return (
+    <img
+      src={src}
+      alt={name}
+      className="w-full h-full object-cover rounded-2xl"
+      loading="lazy"
+    />
+  );
+};
+
 const ChatAmbassador = () => {
   const [isOpen, setIsOpen] = useState(false);
   const [messages, setMessages] = useState<Message[]>([
@@ -448,12 +472,7 @@ export default function App() {
                     <div className="flex flex-col sm:flex-row gap-6 md:gap-8 items-center sm:items-start">
                       <div className="shrink-0">
                         <div className="w-40 h-40 md:w-44 md:h-44 rounded-3xl overflow-hidden glass p-2 group-hover:rotate-2 transition-transform duration-500">
-                          <img
-                            src={member.image}
-                            alt={member.name}
-                            className="w-full h-full object-cover rounded-2xl"
-                            loading="lazy"
-                          />
+                          <TeamPortrait name={member.name} src={member.image} />
                         </div>
                       </div>
 
