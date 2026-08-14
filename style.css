@@ -46,6 +46,40 @@ body {
   }
 }
 
+/* Hyaw brand mark: use the symbol only, without the wordmark. */
+nav > div > div:first-child > div:first-child {
+  background: transparent url('/branding/hyaw-mark.png') center / contain no-repeat !important;
+  color: transparent !important;
+  border-radius: 0 !important;
+}
+
+nav > div > div:first-child > span {
+  display: none !important;
+}
+
+footer > div > div:first-child > div:first-child {
+  background: transparent url('/branding/hyaw-mark.png') center / contain no-repeat !important;
+  color: transparent !important;
+  border-radius: 0 !important;
+  width: 2rem !important;
+  height: 2rem !important;
+}
+
+footer > div > div:first-child > span {
+  display: none !important;
+}
+
+/* Biruk's real portrait replaces the old SVG renderer without changing the card layout. */
+#team div:has(> object[aria-label="Biruk Birhanu"]) {
+  background: #111 url('/team/biruk-birhanu.jpg') center 38% / cover no-repeat !important;
+  padding: 0 !important;
+}
+
+#team object[aria-label="Biruk Birhanu"] {
+  opacity: 0 !important;
+  visibility: hidden !important;
+}
+
 /* Scrollbar Styling */
 ::-webkit-scrollbar {
   width: 8px;
