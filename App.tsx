@@ -1,575 +1,546 @@
-import React, { useEffect, useRef, useState } from 'react';
-import { PROJECTS, SERVICES, TEAM } from './constants';
-import { Message } from './types';
-import { getGeminiAmbassador } from './services/geminiService';
+import React, { useEffect, useMemo, useState } from 'react';
+import { TEAM } from './constants';
 
-const VISIBLE_PROJECTS = PROJECTS.filter(
-  (project) => project.title !== 'Vita Food Complex',
+type ProcessStage = {
+  number: string;
+  name: string;
+  short: string;
+  detail: string;
+};
+
+const collaborationNodes = [
+  { label: 'Founders', className: 'node-founders' },
+  { label: 'Product Teams', className: 'node-product' },
+  { label: 'Enterprise', className: 'node-enterprise' },
+  { label: 'Operations', className: 'node-operations' },
+  { label: 'Startups', className: 'node-startups' },
+  { label: 'Engineering Teams', className: 'node-engineering' },
+];
+
+const services = [
+  ['01', 'Product & Strategy', 'Product definition, technical planning, system requirements, architecture.'],
+  ['02', 'Product Design', 'UX research, interface systems, design systems, and prototyping.'],
+  ['03', 'Software Engineering', 'Web apps, mobile apps, backend systems, APIs, and realtime products.'],
+  ['04', 'Business Systems', 'ERP, internal platforms, workflow automation, and operations software.'],
+  ['05', 'AI & Automation', 'AI-powered features, intelligent workflows, automation, and applied data.'],
+  ['06', 'Cloud & Infrastructure', 'Deployment, containers, CI/CD, monitoring, and scalable infrastructure.'],
+] as const;
+
+const principles = [
+  {
+    number: '01',
+    title: 'WE THINK\nIN SYSTEMS.',
+    text: 'We consider the interface, business rules, data, infrastructure and future scale together.',
+  },
+  {
+    number: '02',
+    title: 'WE BUILD,\nNOT JUST PRESENT.',
+    text: 'Ideas become valuable when they survive implementation and work in the real world.',
+  },
+  {
+    number: '03',
+    title: 'WE STAY CLOSE\nTO THE PROBLEM.',
+    text: 'Understanding what is actually broken comes before choosing technology.',
+  },
+  {
+    number: '04',
+    title: 'WE CARE ABOUT\nTHE LAST 10%.',
+    text: 'Performance, edge cases, interactions, and operational detail separate products from demos.',
+  },
+];
+
+const processStages: ProcessStage[] = [
+  {
+    number: '01',
+    name: 'Understand',
+    short: 'Get close to the problem.',
+    detail: 'We gather context, users, constraints, goals and the real operational problem before choosing a solution.',
+  },
+  {
+    number: '02',
+    name: 'Define',
+    short: 'Turn ambiguity into structure.',
+    detail: 'We shape scope, architecture, requirements and the boundaries of the system.',
+  },
+  {
+    number: '03',
+    name: 'Design',
+    short: 'Make the system visible.',
+    detail: 'Flows, interfaces and states take form while technical decisions stay connected to the experience.',
+  },
+  {
+    number: '04',
+    name: 'Build',
+    short: 'Turn decisions into working software.',
+    detail: 'We assemble the interface, logic, services, data and infrastructure into one working product.',
+  },
+  {
+    number: '05',
+    name: 'Validate',
+    short: 'Stress the product before users do.',
+    detail: 'We test edge cases, performance, failure states and the assumptions behind the product.',
+  },
+  {
+    number: '06',
+    name: 'Launch',
+    short: 'Move a real product into the real world.',
+    detail: 'We ship with deployment, observability and the operational confidence needed for production.',
+  },
+  {
+    number: '07',
+    name: 'Improve',
+    short: 'Keep evolving the system.',
+    detail: 'Feedback returns to the product so the next version starts from reality, not theory.',
+  },
+];
+
+const insights = [
+  ['Product engineering', 'Why product architecture should start before the framework choice.'],
+  ['System design', 'How to build an internal platform that teams actually want to use.'],
+  ['Engineering craft', 'Shipping the last 10%: edge cases, performance and product feel.'],
+];
+
+const Arrow = () => (
+  <svg viewBox="0 0 24 24" aria-hidden="true">
+    <path d="M5 12h13M13 6l6 6-6 6" fill="none" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round" />
+  </svg>
 );
 
-const LEADERSHIP_DETAILS: Record<
-  string,
-  { role: string; bio: string; focus: string[] }
-> = {
-  'Biruk Birhanu': {
-    role: 'CEO • Marketing Manager',
-    bio: "Leads Hyaw's business direction, brand positioning, marketing strategy, partnerships, and growth — connecting strong products with the people and businesses they are built to serve.",
-    focus: ['Business Strategy', 'Brand & Marketing', 'Growth & Partnerships'],
-  },
-  'Mikeyas Derje': {
-    role: 'CTO • Senior Full-Stack Developer • Tech Lead',
-    bio: "Leads Hyaw's technical direction and product delivery across architecture, backend systems, frontend experiences, deployment, and engineering execution.",
-    focus: ['Technology Strategy', 'Full-Stack Engineering', 'Architecture & Delivery'],
-  },
-};
+const BrandMark = () => (
+  <a href="#top" className="brand" aria-label="Hyaw home">
+    <img src="/branding/hyaw-mark.png" alt="" />
+    <span>Hyaw</span>
+  </a>
+);
 
-const scrollToSection = (id: string) => {
-  const element = document.getElementById(id);
-  if (!element) return;
-
-  const offset = 90;
-  const elementPosition = element.getBoundingClientRect().top;
-  const offsetPosition = elementPosition + window.pageYOffset - offset;
-
-  window.scrollTo({
-    top: offsetPosition,
-    behavior: 'smooth',
-  });
-
-  window.history.pushState(null, '', `#${id}`);
-};
-
-const Navbar = () => {
-  const [isMenuOpen, setIsMenuOpen] = useState(false);
-
-  const handleNavClick = (
-    event: React.MouseEvent<HTMLAnchorElement>,
-    id: string,
-  ) => {
-    event.preventDefault();
-    setIsMenuOpen(false);
-    scrollToSection(id);
-  };
-
-  return (
-    <nav className="fixed top-0 left-0 right-0 z-[60] px-4 md:px-6 py-4">
-      <div className="max-w-7xl mx-auto flex items-center justify-between glass rounded-2xl px-4 md:px-8 py-3 shadow-2xl relative">
-        <div
-          className="flex items-center gap-2 cursor-pointer"
-          onClick={() => {
-            window.scrollTo({ top: 0, behavior: 'smooth' });
-            setIsMenuOpen(false);
-            window.history.pushState(null, '', '/');
-          }}
-        >
-          <div className="w-8 h-8 md:w-10 md:h-10 bg-gradient-to-tr from-emerald-500 via-yellow-400 to-red-500 rounded-lg flex items-center justify-center font-bold text-black text-lg md:text-xl">
-            H
-          </div>
-          <span className="text-base md:text-xl font-extrabold tracking-tight bg-clip-text text-transparent bg-gradient-to-r from-white to-gray-400">
-            HYAW
-          </span>
-        </div>
-
-        <div className="hidden md:flex items-center gap-8 text-sm font-medium text-gray-400">
-          <a href="#about" onClick={(event) => handleNavClick(event, 'about')} className="hover:text-white transition-colors">
-            About
-          </a>
-          <a href="#services" onClick={(event) => handleNavClick(event, 'services')} className="hover:text-white transition-colors">
-            Services
-          </a>
-          <a href="#projects" onClick={(event) => handleNavClick(event, 'projects')} className="hover:text-white transition-colors">
-            Portfolio
-          </a>
-          <a href="#team" onClick={(event) => handleNavClick(event, 'team')} className="hover:text-white transition-colors">
-            Team
-          </a>
-          <a href="#contact" onClick={(event) => handleNavClick(event, 'contact')} className="px-5 py-2.5 bg-white text-black rounded-xl hover:bg-emerald-400 transition-all font-bold">
-            Contact Us
-          </a>
-        </div>
-
-        <button
-          className="md:hidden text-white p-2"
-          onClick={() => setIsMenuOpen((open) => !open)}
-          aria-label="Toggle menu"
-          type="button"
-        >
-          {isMenuOpen ? (
-            <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
-            </svg>
-          ) : (
-            <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6h16M4 12h16M4 18h16" />
-            </svg>
-          )}
-        </button>
-
-        {isMenuOpen && (
-          <div className="absolute top-full left-0 right-0 mt-4 md:hidden scale-in-center">
-            <div className="glass rounded-2xl p-6 shadow-2xl flex flex-col gap-6 text-center">
-              <a href="#about" onClick={(event) => handleNavClick(event, 'about')} className="text-lg font-bold text-white py-2">
-                About
-              </a>
-              <a href="#services" onClick={(event) => handleNavClick(event, 'services')} className="text-lg font-bold text-white py-2">
-                Services
-              </a>
-              <a href="#projects" onClick={(event) => handleNavClick(event, 'projects')} className="text-lg font-bold text-white py-2">
-                Portfolio
-              </a>
-              <a href="#team" onClick={(event) => handleNavClick(event, 'team')} className="text-lg font-bold text-white py-2">
-                Team
-              </a>
-              <a href="#contact" onClick={(event) => handleNavClick(event, 'contact')} className="bg-emerald-500 text-black py-4 rounded-xl font-bold text-lg">
-                Contact Us
-              </a>
-            </div>
-          </div>
-        )}
+const InterfacePreview = ({ compact = false }: { compact?: boolean }) => (
+  <div className={`interface-preview ${compact ? 'interface-preview--compact' : ''}`}>
+    <div className="interface-toolbar">
+      <span />
+      <span />
+      <span />
+      <b>OPERATIONS</b>
+    </div>
+    <div className="interface-body">
+      <div className="interface-sidebar">
+        <i className="active" />
+        <i />
+        <i />
+        <i />
+        <i />
       </div>
-    </nav>
-  );
-};
-
-const Hero = () => {
-  const handleButtonClick = (event: React.MouseEvent, id: string) => {
-    event.preventDefault();
-    scrollToSection(id);
-  };
-
-  return (
-    <section className="relative min-h-[90vh] md:min-h-screen flex items-center justify-center pt-24 md:pt-20 overflow-hidden">
-      <div className="absolute inset-0 habesha-pattern pointer-events-none" />
-      <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[300px] md:w-[800px] h-[300px] md:h-[800px] bg-emerald-500/10 blur-[60px] md:blur-[120px] rounded-full pointer-events-none" />
-
-      <div className="relative z-10 max-w-5xl mx-auto px-6 text-center">
-        <div className="inline-flex items-center gap-2 px-3 py-1.5 md:px-4 md:py-2 rounded-full glass border border-white/10 mb-6 md:mb-8 animate-bounce">
-          <span className="flex h-2 w-2 rounded-full bg-emerald-500" />
-          <span className="text-[10px] md:text-xs font-bold tracking-widest uppercase">
-            Powered by Ethiopia
-          </span>
-        </div>
-
-        <h1 className="text-4xl sm:text-5xl md:text-8xl font-black mb-6 md:mb-8 leading-[1.2] md:leading-[1.1] tracking-tight">
-          Digital Innovation <br className="hidden sm:block" />
-          <span className="bg-clip-text text-transparent bg-gradient-to-r from-emerald-400 via-yellow-200 to-red-400 animate-gradient">
-            Born in Addis.
-          </span>
-        </h1>
-
-        <p className="text-base md:text-xl text-gray-400 max-w-2xl mx-auto mb-8 md:mb-10 leading-relaxed">
-          We are Hyaw — an Ethiopian technology team building useful, reliable digital products for ambitious businesses.
-        </p>
-
-        <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
-          <button
-            onClick={(event) => handleButtonClick(event, 'projects')}
-            className="w-full sm:w-auto px-8 md:px-10 py-4 md:py-5 bg-emerald-500 text-black font-bold rounded-2xl hover:bg-emerald-400 hover:scale-105 transition-all text-base md:text-lg"
-            type="button"
-          >
-            View Our Work
-          </button>
-          <button
-            onClick={(event) => handleButtonClick(event, 'about')}
-            className="w-full sm:w-auto px-8 md:px-10 py-4 md:py-5 glass border border-white/10 font-bold rounded-2xl hover:bg-white/5 transition-all text-base md:text-lg text-white"
-            type="button"
-          >
-            Our Story
-          </button>
+      <div className="interface-content">
+        <div className="ui-heading" />
+        <div className="ui-line ui-line--strong" />
+        <div className="ui-line" />
+        <div className="ui-line ui-line--short" />
+        <div className="ui-grid">
+          <span />
+          <span />
+          <span />
         </div>
       </div>
-    </section>
-  );
-};
-
-const SectionTitle = ({ title, subtitle }: { title: string; subtitle: string }) => (
-  <div className="mb-12 md:mb-16">
-    <h2 className="text-3xl md:text-5xl font-bold mb-4">{title}</h2>
-    <p className="text-gray-400 text-base md:text-lg max-w-2xl">{subtitle}</p>
+      <div className="interface-chart">
+        <span style={{ height: '35%' }} />
+        <span style={{ height: '55%' }} />
+        <span style={{ height: '44%' }} />
+        <span style={{ height: '78%' }} />
+        <span style={{ height: '62%' }} />
+      </div>
+    </div>
   </div>
 );
 
-const TeamPortrait = ({ name, src }: { name: string; src: string }) => {
-  if (name === 'Biruk Birhanu' && src.endsWith('.svg')) {
-    return (
-      <object
-        data={src}
-        type="image/svg+xml"
-        aria-label={name}
-        className="w-full h-full rounded-2xl pointer-events-none"
-      >
-        <span className="sr-only">{name}</span>
-      </object>
-    );
-  }
+const Phone = ({ variant = 0 }: { variant?: number }) => (
+  <div className={`phone phone--${variant}`}>
+    <div className="phone-speaker" />
+    <div className="phone-head" />
+    <div className="phone-line phone-line--accent" />
+    <div className="phone-line" />
+    <div className="phone-line phone-line--short" />
+    <div className="phone-stack">
+      <span />
+      <span />
+      <span />
+    </div>
+  </div>
+);
 
-  return (
-    <img
-      src={src}
-      alt={name}
-      className="w-full h-full object-cover rounded-2xl"
-      loading="lazy"
-    />
+const ArchitectureGraphic = () => (
+  <div className="architecture-graphic" aria-hidden="true">
+    <div className="arch-label arch-label--1">EXPERIENCE</div>
+    <div className="arch-plane arch-plane--1">UI</div>
+    <div className="arch-label arch-label--2">APPLICATION</div>
+    <div className="arch-plane arch-plane--2">LOGIC</div>
+    <div className="arch-label arch-label--3">SERVICES</div>
+    <div className="arch-plane arch-plane--3">API</div>
+    <div className="arch-label arch-label--4">DATA</div>
+    <div className="arch-plane arch-plane--4">DATA</div>
+    <div className="arch-label arch-label--5">INFRASTRUCTURE</div>
+  </div>
+);
+
+function App() {
+  const [menuOpen, setMenuOpen] = useState(false);
+  const [activeStage, setActiveStage] = useState(3);
+
+  const mikeyasImage = useMemo(
+    () => TEAM.find((member) => member.name === 'Mikeyas Derje')?.image,
+    [],
   );
-};
-
-const ChatAmbassador = () => {
-  const [isOpen, setIsOpen] = useState(false);
-  const [messages, setMessages] = useState<Message[]>([
-    {
-      role: 'model',
-      text: "Salām! I'm the Hyaw AI Ambassador. How can I help you with our services and projects today?",
-    },
-  ]);
-  const [input, setInput] = useState('');
-  const [isTyping, setIsTyping] = useState(false);
-  const scrollRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
-    if (scrollRef.current) {
-      scrollRef.current.scrollTop = scrollRef.current.scrollHeight;
-    }
-  }, [messages, isTyping]);
+    const revealables = Array.from(document.querySelectorAll<HTMLElement>('[data-reveal]'));
+    const observer = new IntersectionObserver(
+      (entries) => {
+        entries.forEach((entry) => {
+          if (entry.isIntersecting) entry.target.classList.add('is-visible');
+        });
+      },
+      { threshold: 0.12 },
+    );
 
-  const handleSend = async () => {
-    if (!input.trim() || isTyping) return;
+    revealables.forEach((element) => observer.observe(element));
+    return () => observer.disconnect();
+  }, []);
 
-    const userMessage: Message = { role: 'user', text: input };
-    setMessages((current) => [...current, userMessage]);
-    setInput('');
-    setIsTyping(true);
-
-    try {
-      const response = await getGeminiAmbassador(input, messages);
-      setMessages((current) => [...current, { role: 'model', text: response }]);
-    } catch {
-      setMessages((current) => [
-        ...current,
-        { role: 'model', text: "Sorry, I'm having trouble connecting right now." },
-      ]);
-    } finally {
-      setIsTyping(false);
-    }
-  };
+  const currentStage = processStages[activeStage];
 
   return (
-    <div className={`fixed bottom-4 right-4 md:bottom-8 md:right-8 z-[100] ${isOpen ? 'w-[calc(100%-2rem)] md:w-[380px]' : 'w-auto'}`}>
-      {isOpen && (
-        <div className="h-[500px] md:h-[550px] glass rounded-3xl flex flex-col shadow-2xl border border-white/10 overflow-hidden mb-4 scale-in-center">
-          <div className="p-4 md:p-5 border-b border-white/10 flex items-center justify-between bg-white/5 text-white">
-            <div className="flex items-center gap-3">
-              <div className="w-8 h-8 rounded-full bg-emerald-500 flex items-center justify-center font-bold text-black text-xs">
-                HY
-              </div>
-              <div>
-                <p className="text-sm font-bold">Hyaw Ambassador</p>
-                <p className="text-[10px] text-emerald-400 font-bold uppercase tracking-widest">
-                  Active Now
-                </p>
-              </div>
-            </div>
-            <button onClick={() => setIsOpen(false)} className="text-gray-400 hover:text-white p-2" type="button">
-              <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
-              </svg>
-            </button>
-          </div>
-
-          <div ref={scrollRef} className="flex-1 overflow-y-auto p-4 md:p-5 space-y-4 bg-black/40">
-            {messages.map((message, index) => (
-              <div key={`${message.role}-${index}`} className={`flex ${message.role === 'user' ? 'justify-end' : 'justify-start'}`}>
-                <div className={`max-w-[85%] px-4 py-3 rounded-2xl text-sm ${message.role === 'user' ? 'bg-emerald-600 text-white' : 'glass border border-white/10 text-gray-200'}`}>
-                  {message.text}
-                </div>
-              </div>
-            ))}
-
-            {isTyping && (
-              <div className="flex justify-start">
-                <div className="glass px-4 py-3 rounded-2xl text-sm text-gray-400 flex items-center gap-1">
-                  <span className="w-1 h-1 bg-gray-400 rounded-full animate-bounce" />
-                  <span className="w-1 h-1 bg-gray-400 rounded-full animate-bounce [animation-delay:0.2s]" />
-                  <span className="w-1 h-1 bg-gray-400 rounded-full animate-bounce [animation-delay:0.4s]" />
-                </div>
-              </div>
-            )}
-          </div>
-
-          <div className="p-3 md:p-4 bg-white/5">
-            <div className="flex items-center gap-2 glass px-3 py-2 rounded-xl">
-              <input
-                type="text"
-                value={input}
-                onChange={(event) => setInput(event.target.value)}
-                onKeyDown={(event) => {
-                  if (event.key === 'Enter') void handleSend();
-                }}
-                placeholder="Ask about Hyaw..."
-                className="bg-transparent border-none outline-none text-sm flex-1 p-2 text-white"
-              />
-              <button onClick={() => void handleSend()} className="bg-emerald-500 text-black p-2 rounded-lg hover:bg-emerald-400 transition-colors" type="button">
-                <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 10l7-7m0 0l7 7m-7-7v18" />
-                </svg>
-              </button>
-            </div>
-          </div>
-        </div>
-      )}
-
-      <div className="flex justify-end">
+    <div className="site-shell" id="top">
+      <header className="site-header">
+        <BrandMark />
+        <nav className="desktop-nav" aria-label="Primary navigation">
+          <a href="#work">Work</a>
+          <a href="#services">Services</a>
+          <a href="#about">About</a>
+          <a href="#insights">Insights</a>
+        </nav>
+        <a className="header-cta" href="#contact">
+          Start a project <Arrow />
+        </a>
         <button
-          onClick={() => setIsOpen((open) => !open)}
-          className="w-14 h-14 md:w-16 md:h-16 bg-emerald-500 rounded-full flex items-center justify-center shadow-emerald-500/20 shadow-xl hover:scale-110 transition-transform group relative"
+          className="menu-toggle"
           type="button"
-          aria-label="Open Hyaw assistant"
+          aria-label="Toggle navigation"
+          aria-expanded={menuOpen}
+          onClick={() => setMenuOpen((open) => !open)}
         >
-          <div className="absolute -top-1 -right-1 w-4 h-4 bg-red-500 rounded-full border-2 border-black" />
-          <svg className="w-7 h-7 md:w-8 md:h-8 text-black" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 10h.01M12 10h.01M16 10h.01M9 16H5a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v8a2 2 0 01-2 2h-5l-5 5v-5z" />
-          </svg>
+          <span />
+          <span />
         </button>
-      </div>
-    </div>
-  );
-};
-
-export default function App() {
-  return (
-    <div className="min-h-screen bg-[#050505] text-white">
-      <Navbar />
+        <div className={`mobile-menu ${menuOpen ? 'mobile-menu--open' : ''}`}>
+          <a href="#work" onClick={() => setMenuOpen(false)}>Work</a>
+          <a href="#services" onClick={() => setMenuOpen(false)}>Services</a>
+          <a href="#about" onClick={() => setMenuOpen(false)}>About</a>
+          <a href="#insights" onClick={() => setMenuOpen(false)}>Insights</a>
+          <a href="#contact" onClick={() => setMenuOpen(false)}>Start a project</a>
+        </div>
+      </header>
 
       <main>
-        <Hero />
-
-        <section id="services" className="py-16 md:py-24 px-6 relative overflow-hidden scroll-mt-24">
-          <div className="max-w-7xl mx-auto">
-            <SectionTitle
-              title="Expertise Rooted in Engineering Excellence"
-              subtitle="We use modern technology to build practical software, digital products, and infrastructure for businesses in Ethiopia and beyond."
-            />
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 md:gap-6">
-              {SERVICES.map((service) => (
-                <div key={service.id} className="glass p-6 md:p-8 rounded-3xl hover:bg-white/5 transition-all group md:hover:-translate-y-2">
-                  <div className="w-14 h-14 md:w-16 md:h-16 bg-emerald-500/10 rounded-2xl flex items-center justify-center text-emerald-500 mb-6 group-hover:bg-emerald-500 group-hover:text-black transition-all">
-                    {service.icon}
-                  </div>
-                  <h3 className="text-lg md:text-xl font-bold mb-3">{service.title}</h3>
-                  <p className="text-gray-400 text-xs md:text-sm leading-relaxed">{service.description}</p>
-                </div>
-              ))}
-            </div>
-          </div>
-        </section>
-
-        <section id="projects" className="py-16 md:py-24 px-6 bg-white/[0.02] scroll-mt-24">
-          <div className="max-w-7xl mx-auto">
-            <SectionTitle
-              title="Selected Projects"
-              subtitle="A selection of digital products and experiences we've built across commerce, hospitality, beauty, and customer services."
-            />
-
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-6 md:gap-8">
-              {VISIBLE_PROJECTS.map((project) => (
-                <div key={project.id} className="group relative rounded-3xl overflow-hidden glass border-none h-[300px] md:h-[400px]">
-                  <img
-                    src={project.image}
-                    alt={project.title}
-                    className="absolute inset-0 w-full h-full object-cover group-hover:scale-110 transition-transform duration-700 opacity-60"
-                    loading="lazy"
-                  />
-                  <div className="absolute inset-0 bg-gradient-to-t from-black via-black/40 to-transparent p-6 md:p-10 flex flex-col justify-end">
-                    <span className="text-emerald-400 text-[10px] md:text-xs font-black uppercase tracking-[0.2em] mb-2">
-                      {project.category}
-                    </span>
-                    <h3 className="text-2xl md:text-3xl font-bold mb-2">{project.title}</h3>
-                    <p className="text-gray-300 text-xs md:text-sm max-w-md">{project.description}</p>
-                  </div>
-                </div>
-              ))}
-            </div>
-          </div>
-        </section>
-
-        <section id="about" className="py-20 md:py-32 px-6 scroll-mt-24">
-          <div className="max-w-7xl mx-auto grid grid-cols-1 lg:grid-cols-2 gap-12 md:gap-20 items-center">
-            <div className="order-2 lg:order-1">
-              <span className="text-emerald-500 font-black uppercase tracking-widest text-[10px] md:text-xs mb-4 block">
-                Our Story
-              </span>
-              <h2 className="text-3xl md:text-5xl font-bold mb-6 md:mb-8 leading-tight">
-                Building Useful Technology from Ethiopia.
-              </h2>
-
-              <div className="space-y-6 text-gray-400 text-base md:text-lg leading-relaxed">
-                <p>
-                  Hyaw is an Ethiopian technology team focused on turning ideas into dependable digital products. We work across web platforms, business systems, consumer experiences, and modern software infrastructure.
-                </p>
-                <p>
-                  Our approach is simple: understand the real problem, build with care, ship quickly, and keep improving.
-                </p>
-
-                <div className="grid grid-cols-2 gap-6 pt-4">
-                  <div>
-                    <p className="text-2xl md:text-3xl font-black text-white">{VISIBLE_PROJECTS.length}</p>
-                    <p className="text-xs md:text-sm">Featured Projects</p>
-                  </div>
-                  <div>
-                    <p className="text-2xl md:text-3xl font-black text-white">2</p>
-                    <p className="text-xs md:text-sm">Core Team Members</p>
-                  </div>
-                </div>
-              </div>
-            </div>
-
-            <div className="relative order-1 lg:order-2">
-              <div className="aspect-square rounded-3xl overflow-hidden glass p-2 md:p-4">
-                <div className="w-full h-full rounded-2xl overflow-hidden relative">
-                  <img
-                    src="https://images.unsplash.com/photo-1497366754035-f200968a6e72?auto=format&fit=crop&w=1200&q=80"
-                    className="w-full h-full object-cover grayscale hover:grayscale-0 transition-all duration-700"
-                    alt="Hyaw workspace"
-                    loading="lazy"
-                  />
-                  <div className="absolute inset-0 bg-emerald-500/20 mix-blend-multiply" />
-                </div>
-              </div>
-              <div className="absolute -bottom-4 -left-4 md:-bottom-8 md:-left-8 glass p-4 md:p-8 rounded-2xl md:rounded-3xl text-white">
-                <p className="text-[10px] md:text-xs font-bold uppercase tracking-widest mb-1 md:mb-2 text-emerald-400">
-                  Based In
-                </p>
-                <p className="text-lg md:text-xl font-bold italic">Addis Ababa, Ethiopia</p>
-              </div>
-            </div>
-          </div>
-        </section>
-
-        <section id="team" className="py-20 md:py-28 px-6 bg-black scroll-mt-24">
-          <div className="max-w-7xl mx-auto">
-            <div className="text-center mb-12 md:mb-16 max-w-3xl mx-auto">
-              <span className="text-emerald-400 text-[10px] md:text-xs font-black uppercase tracking-[0.25em] mb-4 block">
-                Leadership
-              </span>
-              <h2 className="text-3xl md:text-5xl font-bold mb-4">The Minds Behind Hyaw</h2>
-              <p className="text-gray-400 text-base md:text-lg leading-relaxed">
-                Business growth and engineering leadership working side by side — from strategy and brand to architecture, code, and delivery.
+        <section className="hero section-pad" aria-labelledby="hero-heading">
+          <div className="hero-grid hero-background-mark">
+            <div className="hero-copy" data-reveal>
+              <div className="eyebrow">Design · Product · Engineering</div>
+              <h1 id="hero-heading">We build technology that moves businesses forward.</h1>
+              <p>
+                Hyaw Technologies designs and engineers digital products, platforms and systems — from the first idea to production and scale.
               </p>
+              <div className="hero-actions">
+                <a className="button button--primary" href="#contact">Start a project <Arrow /></a>
+                <a className="button button--quiet" href="#work">Explore our work <Arrow /></a>
+              </div>
             </div>
 
-            <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 md:gap-8 max-w-6xl mx-auto">
-              {TEAM.map((member) => {
-                const details = LEADERSHIP_DETAILS[member.name] ?? {
-                  role: member.role,
-                  bio: member.bio,
-                  focus: [],
-                };
-
-                return (
-                  <article
-                    key={member.id}
-                    className="glass rounded-[2rem] p-6 md:p-8 border border-white/10 group hover:bg-white/[0.04] hover:-translate-y-1 transition-all duration-300"
-                  >
-                    <div className="flex flex-col sm:flex-row gap-6 md:gap-8 items-center sm:items-start">
-                      <div className="shrink-0">
-                        <div className="w-40 h-40 md:w-44 md:h-44 rounded-3xl overflow-hidden glass p-2 group-hover:rotate-2 transition-transform duration-500">
-                          <TeamPortrait name={member.name} src={member.image} />
-                        </div>
-                      </div>
-
-                      <div className="flex-1 text-center sm:text-left min-w-0">
-                        <h3 className="text-2xl md:text-3xl font-bold mb-2">{member.name}</h3>
-                        <p className="text-emerald-400 font-bold uppercase tracking-[0.12em] text-[10px] md:text-xs leading-relaxed mb-4">
-                          {details.role}
-                        </p>
-                        <p className="text-gray-400 text-sm leading-relaxed mb-6">
-                          {details.bio}
-                        </p>
-
-                        <div className="flex flex-wrap justify-center sm:justify-start gap-2">
-                          {details.focus.map((item) => (
-                            <span
-                              key={item}
-                              className="px-3 py-1.5 rounded-full border border-white/10 bg-white/[0.03] text-[10px] md:text-xs font-semibold text-gray-300"
-                            >
-                              {item}
-                            </span>
-                          ))}
-                        </div>
-                      </div>
-                    </div>
-                  </article>
-                );
-              })}
+            <div className="hero-art" data-reveal>
+              <div className="hero-code">
+                <span>architecture.ts</span>
+                <code>product()</code>
+                <code>  .connect(data)</code>
+                <code>  .ship(production)</code>
+              </div>
+              <div className="hero-window">
+                <InterfacePreview compact />
+              </div>
+              <Phone variant={0} />
+              <div className="hero-mini-card">
+                <small>PRODUCT HEALTH</small>
+                <strong>98.7%</strong>
+                <div className="mini-bars"><i /><i /><i /><i /><i /></div>
+              </div>
             </div>
           </div>
         </section>
 
-        <section id="contact" className="py-20 md:py-32 px-4 md:px-6 scroll-mt-24">
-          <div className="max-w-7xl mx-auto glass rounded-[2rem] md:rounded-[3rem] overflow-hidden grid grid-cols-1 lg:grid-cols-2">
-            <div className="p-10 md:p-20 bg-emerald-500 text-black">
-              <h2 className="text-4xl md:text-5xl font-black mb-6 md:mb-8">Ready to Build Something Great?</h2>
-              <div className="space-y-6">
-                <div className="flex items-center gap-4">
-                  <div className="w-10 h-10 md:w-12 md:h-12 bg-black/10 rounded-xl flex items-center justify-center">
-                    <svg className="w-5 h-5 md:w-6 md:h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
-                    </svg>
-                  </div>
-                  <span className="font-bold text-lg md:text-xl">hello@hyaw.tech</span>
+        <section className="collaboration section-pad" aria-labelledby="collaboration-heading">
+          <div className="collab-intro" data-reveal>
+            <div className="eyebrow">Collaboration network</div>
+            <h2 id="collaboration-heading">We plug into ambitious teams.</h2>
+            <p>From two-person startups to complex operating businesses.</p>
+          </div>
+          <div className="collaboration-field" data-reveal>
+            <svg className="collaboration-lines" viewBox="0 0 1000 430" preserveAspectRatio="none" aria-hidden="true">
+              <path d="M500 220 C390 110, 270 80, 180 110" />
+              <path d="M500 220 C610 120, 760 85, 865 115" />
+              <path d="M500 220 C300 235, 210 260, 115 310" />
+              <path d="M500 220 C705 225, 800 250, 900 300" />
+              <path d="M500 220 C410 340, 330 350, 250 370" />
+              <path d="M500 220 C610 330, 700 350, 780 375" />
+            </svg>
+            <div className="collab-center">
+              <img src="/branding/hyaw-mark.png" alt="" />
+              <span>HYAW</span>
+              <small>product partner</small>
+            </div>
+            {collaborationNodes.map((node) => (
+              <div className={`collab-node ${node.className}`} key={node.label}>{node.label}</div>
+            ))}
+          </div>
+          <div className="collab-footer" data-reveal>
+            <strong>Different stage. Different problem.<br />Same job: make it work.</strong>
+            <div className="tiny-tags"><span>product</span><span>design</span><span>engineering</span><span>systems</span></div>
+          </div>
+        </section>
+
+        <section className="work section-pad" id="work" aria-labelledby="work-heading">
+          <div className="section-head" data-reveal>
+            <div>
+              <div className="eyebrow">Selected work</div>
+              <h2 id="work-heading">Selected work</h2>
+            </div>
+            <p>Systems we’ve designed, engineered and brought into the real world.</p>
+          </div>
+
+          <article className="project project--enterprise" data-reveal>
+            <div className="project-copy">
+              <span className="project-index">01</span>
+              <h3>Enterprise<br />Operations Platform</h3>
+              <p>A unified operations system designed to replace fragmented internal workflows with one connected platform.</p>
+              <div className="project-meta">Business systems · Product design · Engineering</div>
+              <a href="#contact">View case study <Arrow /></a>
+            </div>
+            <div className="project-visual project-visual--desktop"><InterfacePreview /></div>
+          </article>
+
+          <article className="project project--mobile" data-reveal>
+            <div className="project-wordmark">FIELD<br />SERVICE</div>
+            <div className="phones-cluster">
+              <Phone variant={1} />
+              <Phone variant={2} />
+              <Phone variant={3} />
+            </div>
+            <div className="project-copy project-copy--mobile">
+              <span className="project-index">02</span>
+              <h3>Mobile Field<br />Service System</h3>
+              <p>A realtime mobile workflow for teams working away from a desk — from assignment to completion.</p>
+              <div className="project-meta">Mobile · Operations · Realtime</div>
+              <a href="#contact">View case study <Arrow /></a>
+            </div>
+          </article>
+
+          <article className="project project--architecture" data-reveal>
+            <div className="project-copy">
+              <span className="project-index">03</span>
+              <h3>Architecture<br />Modernization</h3>
+              <p>Turning a difficult legacy system into infrastructure that can evolve without slowing the business down.</p>
+              <div className="project-meta">Architecture · APIs · Infrastructure</div>
+              <a href="#contact">View case study <Arrow /></a>
+            </div>
+            <ArchitectureGraphic />
+          </article>
+        </section>
+
+        <section className="services section-pad" id="services" aria-labelledby="services-heading">
+          <div className="services-grid">
+            <div className="services-intro" data-reveal>
+              <div className="eyebrow">Capabilities</div>
+              <h2 id="services-heading">From idea<br />to infrastructure.</h2>
+              <p>We work across the complete digital product lifecycle — from defining the problem to keeping the system healthy in production.</p>
+            </div>
+            <div className="services-list" data-reveal>
+              {services.map(([number, title, description]) => (
+                <div className="service-row" key={number}>
+                  <span>{number}</span>
+                  <strong>{title}</strong>
+                  <p>{description}</p>
                 </div>
-              </div>
+              ))}
+            </div>
+            <div className="services-orbit" data-reveal aria-hidden="true">
+              <div className="orbit-card orbit-card--top">IDEA</div>
+              <div className="orbit-card orbit-card--mid">PRODUCT</div>
+              <div className="orbit-card orbit-card--low">SYSTEM</div>
+              <div className="orbit-card orbit-card--base">INFRA</div>
+            </div>
+          </div>
+        </section>
+
+        <section className="surface-system section-pad" aria-labelledby="surface-heading">
+          <div className="surface-grid">
+            <div className="surface-title" data-reveal>
+              <div className="eyebrow">Inside the product</div>
+              <h2 id="surface-heading">Beautiful interfaces are only half the product.</h2>
+            </div>
+            <p className="surface-note" data-reveal>What users see is the finished surface. What keeps it useful is everything engineered underneath.</p>
+            <div className="surface-stack" data-reveal>
+              <div className="surface-layer surface-layer--back"><span>INFRA</span></div>
+              <div className="surface-layer surface-layer--data"><span>DATA</span></div>
+              <div className="surface-layer surface-layer--logic"><span>LOGIC</span></div>
+              <div className="surface-ui"><InterfacePreview compact /></div>
+            </div>
+            <div className="surface-closing" data-reveal>
+              We design what users see —<br />and engineer everything they don’t.
+            </div>
+          </div>
+        </section>
+
+        <section className="why section-pad" aria-label="Why Hyaw">
+          <div className="eyebrow why-label">Why Hyaw</div>
+          <div className="principles">
+            {principles.map((principle, index) => (
+              <article className={`principle principle--${index + 1}`} key={principle.number} data-reveal>
+                <span>{principle.number}</span>
+                <h3>{principle.title.split('\n').map((line) => <React.Fragment key={line}>{line}<br /></React.Fragment>)}</h3>
+                <p>{principle.text}</p>
+              </article>
+            ))}
+          </div>
+        </section>
+
+        <section className="process section-pad" aria-labelledby="process-heading">
+          <div className="process-head" data-reveal>
+            <div>
+              <div className="eyebrow">How we work</div>
+              <h2 id="process-heading">A process that moves with the system.</h2>
+            </div>
+            <p>The path is structured, but not rigid. We move backward or forward whenever the product requires it.</p>
+          </div>
+
+          <div className="process-nav" role="tablist" aria-label="Product process" data-reveal>
+            {processStages.map((stage, index) => (
+              <button
+                key={stage.number}
+                type="button"
+                className={index === activeStage ? 'active' : ''}
+                onClick={() => setActiveStage(index)}
+                role="tab"
+                aria-selected={index === activeStage}
+              >
+                <span>{stage.number}</span>
+                <strong>{stage.name}</strong>
+              </button>
+            ))}
+          </div>
+
+          <div className="process-stage" data-reveal>
+            <div className="process-copy">
+              <span>{currentStage.number} / 07</span>
+              <h3>{currentStage.name}</h3>
+              <strong>{currentStage.short}</strong>
+              <p>{currentStage.detail}</p>
+            </div>
+            <div className={`process-product process-product--${activeStage}`}>
+              <div className="process-backplate">INFRA</div>
+              <div className="process-data">DATA</div>
+              <div className="process-logic">LOGIC</div>
+              <div className="process-interface"><InterfacePreview compact /></div>
+            </div>
+          </div>
+        </section>
+
+        <section className="about section-pad" id="about" aria-labelledby="about-heading">
+          <div className="habesha-collage" data-reveal>
+            <div className="habesha-word">HABESHA</div>
+            <div className="habesha-word habesha-word--second">BUILDERS.</div>
+            <div className="habesha-caption">
+              <div className="eyebrow">Addis Ababa · Ethiopia</div>
+              <h2 id="about-heading">Working close<br />to the problem.</h2>
+              <p>Built from context, not assumptions.</p>
+            </div>
+            <img className="collage-img collage-img--1" src="https://images.unsplash.com/photo-1521737711867-e3b97375f902?auto=format&fit=crop&w=900&q=82" alt="Team collaborating around a table" />
+            <img className="collage-img collage-img--2" src="https://images.unsplash.com/photo-1522071820081-009f0129c71c?auto=format&fit=crop&w=900&q=82" alt="Product team in discussion" />
+            <img className="collage-img collage-img--3" src="https://images.unsplash.com/photo-1556761175-b413da4baf72?auto=format&fit=crop&w=900&q=82" alt="People working together" />
+          </div>
+
+          <div className="founders" data-reveal>
+            <div className="founders-title">
+              <div className="eyebrow">Built by builders</div>
+              <h2>SMALL TEAM.</h2>
+              <p>Hyaw is product-focused, close to the work, and serious about what ships.</p>
             </div>
 
-            <div className="p-8 md:p-20 bg-black/40">
-              <form className="space-y-5 md:space-y-6" onSubmit={(event) => event.preventDefault()}>
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-5 md:gap-6">
-                  <div className="space-y-2">
-                    <label className="text-[10px] font-black uppercase tracking-widest text-gray-500">Name</label>
-                    <input type="text" className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 md:px-5 md:py-4 focus:border-emerald-500 outline-none text-sm text-white" placeholder="Your name" />
-                  </div>
-                  <div className="space-y-2">
-                    <label className="text-[10px] font-black uppercase tracking-widest text-gray-500">Email</label>
-                    <input type="email" className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 md:px-5 md:py-4 focus:border-emerald-500 outline-none text-sm text-white" placeholder="you@company.com" />
-                  </div>
-                </div>
+            <article className="founder founder--biruk">
+              <img src="/team/biruk-birhanu.jpg" alt="Biruk Birhanu" />
+              <div className="founder-meta">
+                <span>01</span>
+                <strong>Biruk Birhanu</strong>
+                <small>Co-founder · Business & Growth</small>
+              </div>
+            </article>
 
-                <div className="space-y-2">
-                  <label className="text-[10px] font-black uppercase tracking-widest text-gray-500">Message</label>
-                  <textarea rows={4} className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 md:px-5 md:py-4 focus:border-emerald-500 outline-none text-sm text-white" placeholder="Tell us about your project..." />
-                </div>
+            <article className="founder founder--mikeyas">
+              {mikeyasImage ? <img src={mikeyasImage} alt="Mikeyas Derje" /> : <div className="founder-placeholder">MD</div>}
+              <div className="founder-meta">
+                <span>02</span>
+                <strong>Mikeyas Derje</strong>
+                <small>Co-founder · Product & Engineering</small>
+              </div>
+            </article>
 
-                <button className="w-full py-4 md:py-5 bg-white text-black font-black rounded-xl hover:bg-emerald-400 transition-all uppercase tracking-widest text-sm" type="submit">
-                  Send Message
-                </button>
-              </form>
+            <blockquote>“Understand the system behind the problem before choosing the solution.”</blockquote>
+            <div className="serious-type">SERIOUS<br />ENGINEERING.</div>
+          </div>
+        </section>
+
+        <section className="insights section-pad" id="insights" aria-labelledby="insights-heading">
+          <div className="section-head" data-reveal>
+            <div>
+              <div className="eyebrow">Notes from the work</div>
+              <h2 id="insights-heading">Thinking out loud.</h2>
+            </div>
+            <p>What we learn while designing, building and operating products.</p>
+          </div>
+          <div className="insight-grid">
+            {insights.map(([category, title], index) => (
+              <article key={category} data-reveal>
+                <span>0{index + 1}</span>
+                <small>{category}</small>
+                <h3>{title}</h3>
+                <a href="#contact">Read note <Arrow /></a>
+              </article>
+            ))}
+          </div>
+        </section>
+
+        <section className="contact section-pad" id="contact" aria-labelledby="contact-heading">
+          <div className="contact-grid">
+            <div data-reveal>
+              <div className="eyebrow">Start a conversation</div>
+              <h2 id="contact-heading">Have something ambitious in mind?</h2>
+              <p>Tell us what you’re trying to build, fix or rethink.</p>
+              <a className="button button--primary" href="mailto:hello@hyaw.tech">Start a conversation <Arrow /></a>
+            </div>
+            <div className="contact-particles" aria-hidden="true" data-reveal>
+              {Array.from({ length: 24 }).map((_, index) => <span key={index} style={{ '--i': index } as React.CSSProperties} />)}
             </div>
           </div>
         </section>
       </main>
 
-      <footer className="py-12 md:py-20 px-6 border-t border-white/10 bg-[#050505]">
-        <div className="max-w-7xl mx-auto flex flex-col md:flex-row justify-between items-center gap-8">
-          <div className="flex items-center gap-3">
-            <div className="w-7 h-7 bg-emerald-500 rounded flex items-center justify-center font-bold text-black">H</div>
-            <span className="font-black tracking-tight text-lg">HYAW</span>
-          </div>
-
-          <p className="text-gray-500 text-xs md:text-sm text-center">
-            © {new Date().getFullYear()} Hyaw. Built in Ethiopia.
-          </p>
-
-          <div className="flex gap-6 text-gray-400">
-            <a href="#" className="hover:text-emerald-400 transition-colors text-xs uppercase tracking-widest font-bold">
-              LinkedIn
-            </a>
-            <a href="#" className="hover:text-emerald-400 transition-colors text-xs uppercase tracking-widest font-bold">
-              Twitter
-            </a>
-          </div>
+      <footer className="site-footer">
+        <BrandMark />
+        <div className="footer-links">
+          <a href="#work">Work</a>
+          <a href="#services">Services</a>
+          <a href="#about">About</a>
+          <a href="#insights">Insights</a>
+          <a href="#contact">Contact</a>
         </div>
+        <p>Designed & engineered by Hyaw.</p>
       </footer>
-
-      <ChatAmbassador />
     </div>
   );
 }
+
+export default App;
