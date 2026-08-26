@@ -1,0 +1,327 @@
+/* About / founders layout refinement + GSAP animation hooks */
+.about {
+  overflow: clip;
+}
+
+.habesha-collage {
+  min-height: 720px;
+  height: auto;
+  position: relative;
+  overflow: visible;
+  padding-top: 28px;
+  padding-bottom: 48px;
+}
+
+.habesha-word {
+  top: 26px;
+  left: 0;
+  font-size: clamp(86px, 11.4vw, 170px);
+  line-height: .78;
+  color: #d9d1c5;
+  z-index: 0;
+  pointer-events: none;
+}
+
+.habesha-word--second {
+  top: 144px;
+  left: 18%;
+  font-size: clamp(78px, 10.4vw, 148px);
+  color: var(--ink);
+  z-index: 1;
+  max-width: 58%;
+  pointer-events: none;
+}
+
+.habesha-caption {
+  left: 0;
+  bottom: 72px;
+  width: min(310px, 25vw);
+  max-width: 310px;
+  z-index: 8;
+}
+
+.habesha-caption h2 {
+  font-size: clamp(34px, 3.5vw, 54px);
+  line-height: .9;
+  margin-bottom: 16px;
+}
+
+.collage-img {
+  transform-origin: 50% 50%;
+  will-change: transform, clip-path, opacity, filter;
+}
+
+.collage-img--1 {
+  width: 34%;
+  height: 270px;
+  left: 34%;
+  top: 232px;
+  transform: rotate(-3deg);
+  z-index: 5;
+}
+
+.collage-img--2 {
+  width: 32%;
+  height: 238px;
+  right: 3%;
+  top: 184px;
+  transform: rotate(2.5deg);
+  z-index: 4;
+}
+
+.collage-img--3 {
+  width: 25%;
+  height: 190px;
+  left: 25%;
+  bottom: 28px;
+  transform: rotate(4deg);
+  z-index: 6;
+}
+
+.founders {
+  min-height: 840px;
+  position: relative;
+  border-top: 1px solid var(--line);
+  padding-top: 80px;
+  padding-bottom: 70px;
+  overflow: visible;
+}
+
+.founders-title {
+  width: min(430px, 30vw);
+  max-width: 430px;
+  position: relative;
+  z-index: 5;
+}
+
+.founders-title h2 {
+  font-size: clamp(72px, 8.2vw, 124px);
+  line-height: .76;
+  margin-bottom: 28px;
+}
+
+.founders-title p {
+  max-width: 320px;
+  font-size: 12px;
+}
+
+.founder {
+  position: absolute;
+  z-index: 4;
+  will-change: transform, opacity;
+}
+
+.founder--biruk {
+  width: 26%;
+  height: 360px;
+  left: 34%;
+  top: 135px;
+  transform: rotate(-2deg);
+}
+
+.founder--mikeyas {
+  width: 25%;
+  height: 380px;
+  right: 4%;
+  top: 82px;
+  transform: rotate(1.4deg);
+}
+
+.founder img,
+.founder-placeholder {
+  will-change: transform, clip-path, filter, opacity;
+}
+
+.founder-meta {
+  position: relative;
+  z-index: 3;
+}
+
+.founders blockquote {
+  position: absolute;
+  width: 300px;
+  left: 46%;
+  right: auto;
+  bottom: 118px;
+  margin: 0;
+  font-size: 18px;
+  line-height: 1.2;
+  font-weight: 700;
+  letter-spacing: -.04em;
+  z-index: 6;
+}
+
+.serious-type {
+  position: absolute;
+  right: 1%;
+  bottom: 8px;
+  font-size: clamp(62px, 7.2vw, 104px);
+  line-height: .74;
+  max-width: 56%;
+  text-align: right;
+  z-index: 2;
+  pointer-events: none;
+}
+
+.about-sand-word {
+  display: inline-block;
+  white-space: nowrap;
+}
+
+.about-sand-char {
+  display: inline-block;
+  will-change: transform, opacity, filter;
+  backface-visibility: hidden;
+}
+
+.about--motion [data-reveal] {
+  opacity: 1 !important;
+  transform: none !important;
+  transition: none !important;
+}
+
+@media (max-width: 1100px) {
+  .habesha-collage {
+    min-height: 680px;
+  }
+
+  .habesha-word--second {
+    left: 14%;
+    max-width: 65%;
+  }
+
+  .collage-img--1 { left: 31%; width: 40%; }
+  .collage-img--2 { right: 0; width: 36%; }
+  .collage-img--3 { left: 18%; width: 30%; }
+
+  .founders {
+    min-height: 900px;
+  }
+
+  .founders-title {
+    width: 42%;
+  }
+
+  .founder--biruk {
+    width: 34%;
+    left: 27%;
+    top: 245px;
+  }
+
+  .founder--mikeyas {
+    width: 32%;
+    right: 2%;
+    top: 175px;
+  }
+
+  .founders blockquote {
+    left: 8%;
+    bottom: 128px;
+  }
+
+  .serious-type {
+    max-width: 65%;
+  }
+}
+
+@media (max-width: 760px) {
+  .habesha-collage {
+    min-height: 640px;
+    padding-bottom: 18px;
+  }
+
+  .habesha-word {
+    font-size: clamp(66px, 20vw, 110px);
+    top: 24px;
+  }
+
+  .habesha-word--second {
+    font-size: clamp(62px, 18vw, 96px);
+    top: 92px;
+    left: 10%;
+    max-width: 88%;
+  }
+
+  .habesha-caption {
+    width: 58%;
+    max-width: 220px;
+    bottom: 14px;
+  }
+
+  .collage-img--1 {
+    width: 60%;
+    height: 210px;
+    left: 28%;
+    top: 176px;
+  }
+
+  .collage-img--2 {
+    width: 48%;
+    height: 170px;
+    right: -5%;
+    top: 314px;
+  }
+
+  .collage-img--3 {
+    width: 38%;
+    height: 142px;
+    left: 8%;
+    bottom: 70px;
+  }
+
+  .founders {
+    min-height: 940px;
+    padding-top: 54px;
+  }
+
+  .founders-title {
+    width: 100%;
+    max-width: 100%;
+  }
+
+  .founders-title h2 {
+    font-size: clamp(64px, 20vw, 92px);
+    max-width: 330px;
+  }
+
+  .founder--biruk {
+    width: 57%;
+    height: 280px;
+    left: 0;
+    top: 250px;
+  }
+
+  .founder--mikeyas {
+    width: 51%;
+    height: 292px;
+    right: -4%;
+    top: 418px;
+  }
+
+  .founders blockquote {
+    left: 0;
+    bottom: 126px;
+    width: 235px;
+    font-size: 15px;
+  }
+
+  .serious-type {
+    right: 0;
+    bottom: 16px;
+    max-width: 100%;
+    font-size: clamp(46px, 15vw, 70px);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .about-sand-char,
+  .collage-img,
+  .founder,
+  .founder img,
+  .founder-placeholder {
+    opacity: 1 !important;
+    transform: none !important;
+    filter: none !important;
+    clip-path: inset(0 0 0 0) !important;
+  }
+}
