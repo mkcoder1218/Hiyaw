@@ -1,0 +1,270 @@
+/* Founder showcase: make the two founders unmistakably visible, not small profile cards. */
+.founders {
+  min-height: 0;
+  display: grid;
+  grid-template-columns: repeat(12, minmax(0, 1fr));
+  column-gap: clamp(18px, 2.2vw, 34px);
+  row-gap: 28px;
+  padding-top: clamp(72px, 8vw, 112px);
+  padding-bottom: clamp(96px, 10vw, 150px);
+  overflow: visible;
+}
+
+.founders-title {
+  position: static;
+  grid-column: 1 / 7;
+  width: auto;
+  max-width: 660px;
+  align-self: start;
+  z-index: 6;
+}
+
+.founders-title h2 {
+  font-size: clamp(82px, 9vw, 146px);
+  line-height: .73;
+  letter-spacing: -.075em;
+  margin-bottom: 26px;
+}
+
+.founders-title p {
+  max-width: 390px;
+  font-size: 13px;
+  line-height: 1.55;
+}
+
+.founder {
+  position: relative;
+  width: auto;
+  height: auto;
+  top: auto;
+  left: auto;
+  right: auto;
+  bottom: auto;
+  z-index: 4;
+  transform-origin: 50% 50%;
+}
+
+.founder--biruk {
+  grid-column: 1 / 7;
+  margin-top: 32px;
+}
+
+.founder--mikeyas {
+  grid-column: 7 / 13;
+  margin-top: -88px;
+}
+
+.founder img,
+.founder-placeholder {
+  display: block;
+  width: 100%;
+  height: clamp(500px, 42vw, 680px);
+  object-fit: cover;
+  border: 1px solid rgba(24, 42, 34, .12);
+  background: #d8ddd9;
+  box-shadow: 0 30px 58px rgba(27, 43, 36, .10);
+}
+
+.founder--biruk img {
+  object-position: 50% 42%;
+}
+
+.founder--mikeyas img {
+  object-position: 50% 35%;
+}
+
+.founder-meta {
+  position: relative;
+  z-index: 5;
+  display: grid;
+  grid-template-columns: 72px minmax(0, 1fr);
+  gap: 4px 18px;
+  margin-top: 0;
+  padding: 22px 2px 24px;
+  background: transparent;
+  border: 0;
+  border-top: 1px solid rgba(24, 42, 34, .18);
+  border-bottom: 1px solid rgba(24, 42, 34, .18);
+}
+
+.founder-meta > span {
+  grid-column: 1;
+  grid-row: 1 / 5;
+  font-family: 'DM Mono', monospace;
+  font-size: 9px;
+  color: var(--mint-dark);
+  padding-top: 3px;
+}
+
+.founder-meta > strong {
+  grid-column: 2;
+  display: block;
+  margin: 0;
+  font-size: clamp(24px, 2.2vw, 34px);
+  line-height: 1;
+  letter-spacing: -.045em;
+}
+
+.founder-meta > small {
+  grid-column: 2;
+  display: block;
+  margin-top: 5px;
+  font-family: 'DM Mono', monospace;
+  font-size: 9px;
+  line-height: 1.45;
+  color: #688077;
+  text-transform: uppercase;
+  letter-spacing: .05em;
+}
+
+.founder-story {
+  grid-column: 2;
+  max-width: 500px;
+  margin: 15px 0 0;
+  font-size: 13px;
+  line-height: 1.55;
+  color: #38483f;
+}
+
+.founder-focus {
+  grid-column: 2;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 7px;
+  margin-top: 16px;
+}
+
+.founder-focus span {
+  display: inline-flex;
+  align-items: center;
+  min-height: 28px;
+  padding: 0 10px;
+  border: 1px solid rgba(31, 69, 57, .18);
+  background: rgba(255, 255, 255, .34);
+  font-family: 'DM Mono', monospace;
+  font-size: 8px;
+  line-height: 1;
+  text-transform: uppercase;
+  letter-spacing: .06em;
+  color: #42665a;
+}
+
+.founders blockquote {
+  position: relative;
+  grid-column: 2 / 7;
+  left: auto;
+  right: auto;
+  bottom: auto;
+  width: auto;
+  max-width: 500px;
+  margin: 26px 0 0;
+  align-self: start;
+  font-size: clamp(22px, 2.2vw, 34px);
+  line-height: 1.03;
+  letter-spacing: -.045em;
+  z-index: 6;
+}
+
+.serious-type {
+  position: relative;
+  grid-column: 7 / 13;
+  right: auto;
+  bottom: auto;
+  max-width: none;
+  margin-top: 28px;
+  align-self: end;
+  text-align: right;
+  font-size: clamp(68px, 7.5vw, 118px);
+  line-height: .72;
+  letter-spacing: -.075em;
+  z-index: 2;
+}
+
+/* A subtle founder index makes each person read as a full profile, not a thumbnail. */
+.founder::before {
+  position: absolute;
+  top: 18px;
+  left: 18px;
+  z-index: 7;
+  display: grid;
+  place-items: center;
+  width: 42px;
+  height: 42px;
+  background: rgba(244, 240, 232, .88);
+  border: 1px solid rgba(26, 53, 44, .14);
+  backdrop-filter: blur(8px);
+  font-family: 'DM Mono', monospace;
+  font-size: 9px;
+  color: var(--mint-dark);
+}
+
+.founder--biruk::before { content: '01'; }
+.founder--mikeyas::before { content: '02'; }
+
+@media (max-width: 1050px) {
+  .founders-title { grid-column: 1 / 9; }
+  .founder--biruk { grid-column: 1 / 7; }
+  .founder--mikeyas { grid-column: 7 / 13; margin-top: -30px; }
+  .founder img, .founder-placeholder { height: clamp(430px, 53vw, 590px); }
+  .founders blockquote { grid-column: 1 / 7; }
+  .serious-type { grid-column: 6 / 13; }
+}
+
+@media (max-width: 760px) {
+  .founders {
+    grid-template-columns: 1fr;
+    row-gap: 34px;
+    padding-top: 58px;
+    padding-bottom: 86px;
+  }
+
+  .founders-title,
+  .founder--biruk,
+  .founder--mikeyas,
+  .founders blockquote,
+  .serious-type {
+    grid-column: 1;
+    margin-top: 0;
+  }
+
+  .founders-title h2 {
+    max-width: none;
+    font-size: clamp(68px, 20vw, 98px);
+  }
+
+  .founder img,
+  .founder-placeholder {
+    height: min(132vw, 590px);
+  }
+
+  .founder--biruk,
+  .founder--mikeyas {
+    width: 100%;
+  }
+
+  .founder-meta {
+    grid-template-columns: 48px 1fr;
+    gap: 4px 12px;
+    padding-top: 18px;
+  }
+
+  .founder-meta > strong {
+    font-size: 27px;
+  }
+
+  .founder-story {
+    font-size: 12px;
+  }
+
+  .founders blockquote {
+    max-width: 86%;
+    margin-top: 10px;
+    font-size: 24px;
+  }
+
+  .serious-type {
+    text-align: left;
+    margin-top: 8px;
+    font-size: clamp(52px, 16vw, 78px);
+  }
+}
