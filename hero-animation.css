@@ -1,0 +1,360 @@
+.hero--motion {
+  min-height: calc(100vh - 74px);
+  padding-top: 78px;
+  padding-bottom: 78px;
+  overflow: hidden;
+}
+
+.hero--motion .hero-grid {
+  grid-template-columns: minmax(440px, .78fr) minmax(680px, 1.22fr);
+  gap: clamp(24px, 3vw, 58px);
+  min-height: 650px;
+  align-items: center;
+}
+
+.hero--motion .hero-copy {
+  max-width: 630px;
+}
+
+.hero--motion .hero-copy[data-reveal],
+.hero--motion .hero-art[data-reveal] {
+  opacity: 1 !important;
+  transform: none !important;
+  transition: none !important;
+}
+
+.hero--motion h1 {
+  font-size: clamp(58px, 5.85vw, 100px);
+  line-height: .91;
+  max-width: 700px;
+  overflow: visible;
+}
+
+.sand-word {
+  display: inline-block;
+  white-space: nowrap;
+}
+
+.sand-char {
+  display: inline-block;
+  will-change: transform, opacity, filter;
+  backface-visibility: hidden;
+}
+
+.hero--motion .hero-art {
+  height: 650px;
+  min-width: 760px;
+  width: calc(100% + 10vw);
+  margin-left: -3vw;
+  margin-right: -8vw;
+  perspective: 1400px;
+  transform-style: preserve-3d;
+  overflow: visible;
+}
+
+.hero--motion .hero-code {
+  width: 48%;
+  left: 0;
+  top: 5%;
+  padding: 24px 26px;
+  font-size: 12px;
+  line-height: 1.55;
+  box-shadow: 0 34px 70px rgba(27, 43, 36, .14), 0 9px 24px rgba(27, 43, 36, .08);
+}
+
+.hero--motion .hero-code span {
+  font-size: 11px;
+  margin-bottom: 18px;
+}
+
+.hero--motion .hero-code code {
+  margin: 8px 0;
+}
+
+.hero--motion .hero-window {
+  width: 72%;
+  right: 3%;
+  top: 14%;
+  z-index: 4;
+  filter: drop-shadow(0 26px 38px rgba(35, 49, 43, .13));
+}
+
+.hero--motion .hero-window .interface-toolbar {
+  height: 42px;
+  padding-inline: 16px;
+}
+
+.hero--motion .hero-window .interface-preview--compact .interface-body {
+  min-height: 235px;
+  grid-template-columns: 52px 1fr .64fr;
+}
+
+.hero--motion .hero-window .interface-content {
+  padding: 28px;
+}
+
+.hero--motion .hero-window .interface-sidebar {
+  padding: 22px 12px;
+  gap: 13px;
+}
+
+.hero--motion .hero-window .interface-sidebar i {
+  height: 7px;
+}
+
+.hero--motion .hero-window .ui-heading,
+.hero--motion .hero-window .ui-line {
+  height: 10px;
+}
+
+.hero--motion .hero-window .ui-grid {
+  gap: 11px;
+  margin-top: 28px;
+}
+
+.hero--motion .hero-window .ui-grid span {
+  height: 62px;
+}
+
+.hero--motion .hero-window .interface-chart {
+  gap: 11px;
+  padding: 28px 18px;
+}
+
+.hero--motion .hero-window .interface-chart span {
+  width: 15px;
+}
+
+.hero--motion .hero-art > .phone {
+  width: 138px;
+  height: 284px;
+  left: 7%;
+  bottom: 2%;
+  z-index: 7;
+  border-width: 8px;
+  border-radius: 26px;
+  padding: 30px 14px 14px;
+  box-shadow: 0 28px 50px rgba(20, 49, 40, .17);
+}
+
+.hero--motion .hero-art > .phone .phone-head {
+  height: 15px;
+}
+
+.hero--motion .hero-art > .phone .phone-line {
+  height: 8px;
+  margin: 11px 0;
+}
+
+.hero--motion .hero-art > .phone .phone-stack {
+  gap: 9px;
+  margin-top: 22px;
+}
+
+.hero--motion .hero-art > .phone .phone-stack span {
+  height: 34px;
+}
+
+.hero--motion .hero-mini-card {
+  width: 230px;
+  right: 0;
+  bottom: 1%;
+  padding: 22px;
+  z-index: 8;
+  box-shadow: 0 34px 66px rgba(37, 53, 46, .13), 0 8px 22px rgba(37, 53, 46, .08);
+}
+
+.hero--motion .hero-mini-card small {
+  font-size: 9px;
+  letter-spacing: .05em;
+}
+
+.hero--motion .hero-mini-card strong {
+  font-size: 31px;
+  margin: 12px 0 16px;
+}
+
+.hero--motion .mini-bars {
+  height: 58px;
+  gap: 8px;
+}
+
+.hero--motion .mini-bars i {
+  width: 15%;
+}
+
+.hero--motion[data-gsap-ready='true'] .hero-code,
+.hero--motion[data-gsap-ready='true'] .hero-window,
+.hero--motion[data-gsap-ready='true'] .hero-art > .phone,
+.hero--motion[data-gsap-ready='true'] .hero-mini-card {
+  will-change: transform, opacity;
+}
+
+@media (max-width: 1220px) {
+  .hero--motion .hero-grid {
+    grid-template-columns: minmax(380px, .84fr) minmax(580px, 1.16fr);
+  }
+
+  .hero--motion .hero-art {
+    min-width: 640px;
+    height: 590px;
+    margin-left: -2vw;
+  }
+
+  .hero--motion .hero-window {
+    width: 70%;
+  }
+
+  .hero--motion .hero-art > .phone {
+    width: 122px;
+    height: 250px;
+  }
+
+  .hero--motion .hero-mini-card {
+    width: 205px;
+  }
+}
+
+@media (max-width: 980px) {
+  .hero--motion {
+    min-height: auto;
+    padding-top: 72px;
+    padding-bottom: 72px;
+  }
+
+  .hero--motion .hero-grid {
+    grid-template-columns: 1fr;
+    min-height: 0;
+    gap: 34px;
+  }
+
+  .hero--motion .hero-copy {
+    max-width: 760px;
+  }
+
+  .hero--motion h1 {
+    font-size: clamp(56px, 10vw, 88px);
+  }
+
+  .hero--motion .hero-art {
+    width: 100%;
+    min-width: 0;
+    height: 570px;
+    margin: 10px 0 0;
+  }
+
+  .hero--motion .hero-code {
+    width: 44%;
+    left: 2%;
+  }
+
+  .hero--motion .hero-window {
+    width: 68%;
+    right: 2%;
+  }
+}
+
+@media (max-width: 640px) {
+  .hero--motion {
+    padding-top: 48px;
+    padding-bottom: 54px;
+  }
+
+  .hero--motion h1 {
+    font-size: 52px;
+    line-height: .92;
+  }
+
+  .hero--motion .hero-art {
+    height: 410px;
+    margin-top: 22px;
+  }
+
+  .hero--motion .hero-code {
+    width: 57%;
+    left: -2%;
+    top: 3%;
+    padding: 14px;
+    font-size: 8px;
+  }
+
+  .hero--motion .hero-code span {
+    font-size: 8px;
+    margin-bottom: 10px;
+  }
+
+  .hero--motion .hero-window {
+    width: 78%;
+    right: -8%;
+    top: 16%;
+  }
+
+  .hero--motion .hero-window .interface-toolbar {
+    height: 27px;
+  }
+
+  .hero--motion .hero-window .interface-preview--compact .interface-body {
+    min-height: 125px;
+    grid-template-columns: 32px 1fr;
+  }
+
+  .hero--motion .hero-window .interface-chart {
+    display: none;
+  }
+
+  .hero--motion .hero-window .interface-content {
+    padding: 16px;
+  }
+
+  .hero--motion .hero-window .interface-sidebar {
+    padding: 12px 7px;
+    gap: 8px;
+  }
+
+  .hero--motion .hero-window .ui-grid span {
+    height: 36px;
+  }
+
+  .hero--motion .hero-art > .phone {
+    width: 82px;
+    height: 170px;
+    left: 0;
+    bottom: 1%;
+    border-width: 5px;
+    border-radius: 18px;
+    padding: 20px 8px 8px;
+  }
+
+  .hero--motion .hero-art > .phone .phone-stack span {
+    height: 21px;
+  }
+
+  .hero--motion .hero-mini-card {
+    width: 145px;
+    right: -2%;
+    bottom: 0;
+    padding: 12px;
+  }
+
+  .hero--motion .hero-mini-card strong {
+    font-size: 20px;
+    margin: 7px 0 10px;
+  }
+
+  .hero--motion .mini-bars {
+    height: 34px;
+    gap: 5px;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .sand-char,
+  .hero--motion .hero-code,
+  .hero--motion .hero-window,
+  .hero--motion .hero-art > .phone,
+  .hero--motion .hero-mini-card {
+    opacity: 1 !important;
+    transform: none !important;
+    filter: none !important;
+  }
+}
