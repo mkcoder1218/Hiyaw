@@ -1,8 +1,9 @@
-
 import React from 'react';
 import ReactDOM from 'react-dom/client';
 import './style.css';
+import './hero-animation.css';
 import App from './App';
+import { initHeroMotion } from './heroMotion';
 
 const rootElement = document.getElementById('root');
 if (!rootElement) {
@@ -15,3 +16,5 @@ root.render(
     <App />
   </React.StrictMode>
 );
+
+initHeroMotion();
