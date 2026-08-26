@@ -32,6 +32,12 @@ const splitContactTitle = (element: HTMLElement) => {
   element.replaceChildren(fragment);
 };
 
+const setButtonText = (button: HTMLAnchorElement, label: string) => {
+  const textNode = Array.from(button.childNodes).find((node) => node.nodeType === Node.TEXT_NODE);
+  if (textNode) textNode.textContent = `${label} `;
+  else button.prepend(document.createTextNode(`${label} `));
+};
+
 const enhanceContact = (section: HTMLElement) => {
   if (section.dataset.contactEnhanced === 'true') return;
   section.dataset.contactEnhanced = 'true';
@@ -74,10 +80,32 @@ const enhanceContact = (section: HTMLElement) => {
   if (button) copy.insertBefore(options, button);
   else copy.appendChild(options);
 
+  const actions = document.createElement('div');
+  actions.className = 'contact-actions';
+
+  if (button) {
+    button.classList.add('contact-email');
+    button.href = 'mailto:hello@hyaw.tech?subject=Hyaw%20inquiry%20%C2%B7%20New%20product';
+    button.setAttribute('aria-label', 'Email Hyaw');
+    setButtonText(button, 'Email us');
+    button.parentNode?.insertBefore(actions, button);
+    actions.appendChild(button);
+  }
+
+  const call = document.createElement('a');
+  call.className = 'button button--quiet contact-call';
+  call.href = 'tel:+251963459693';
+  call.setAttribute('aria-label', 'Call Hyaw at +251 963 459 693');
+  call.innerHTML = '<span>Call +251 963 459 693</span><span aria-hidden="true">↗</span>';
+  actions.appendChild(call);
+
+  if (!actions.parentElement) copy.appendChild(actions);
+
   const direct = document.createElement('div');
   direct.className = 'contact-direct';
   direct.innerHTML = `
     <div><small>Email</small><a href="mailto:hello@hyaw.tech">hello@hyaw.tech</a></div>
+    <div><small>Call</small><a href="tel:+251963459693">+251 963 459 693</a></div>
     <div><small>Base</small><strong>Addis Ababa, Ethiopia</strong></div>
     <div><small>Best fit</small><strong>Products · Systems · Platforms</strong></div>
   `;
@@ -110,7 +138,7 @@ const animateContact = (gsap: any, section: HTMLElement) => {
   const copyText = section.querySelector<HTMLElement>('.contact-copy > p');
   const status = section.querySelector<HTMLElement>('.contact-status');
   const options = Array.from(section.querySelectorAll<HTMLElement>('.contact-option'));
-  const button = section.querySelector<HTMLElement>('.button--primary');
+  const actionButtons = Array.from(section.querySelectorAll<HTMLElement>('.contact-actions a'));
   const directItems = Array.from(section.querySelectorAll<HTMLElement>('.contact-direct > div'));
   const particleWrap = section.querySelector<HTMLElement>('.contact-particles');
   const particles = Array.from(section.querySelectorAll<HTMLElement>('.contact-particles > span:not(.contact-orbit-label)'));
@@ -170,7 +198,7 @@ const animateContact = (gsap: any, section: HTMLElement) => {
     .fromTo(copyText, { opacity: 0, y: 18 }, { opacity: 1, y: 0, duration: .48 }, '-=.46')
     .fromTo(status, { opacity: 0, x: -14 }, { opacity: 1, x: 0, duration: .42 }, '-=.3')
     .fromTo(options, { opacity: 0, y: 18, scale: .94 }, { opacity: 1, y: 0, scale: 1, duration: .42, stagger: .07, ease: 'back.out(1.35)' }, '-=.24')
-    .fromTo(button, { opacity: 0, y: 24, scale: .94 }, { opacity: 1, y: 0, scale: 1, duration: .56, ease: 'expo.out' }, '-=.25')
+    .fromTo(actionButtons, { opacity: 0, y: 24, scale: .94 }, { opacity: 1, y: 0, scale: 1, duration: .52, stagger: .09, ease: 'expo.out' }, '-=.25')
     .fromTo(directItems, { opacity: 0, y: 16 }, { opacity: 1, y: 0, duration: .4, stagger: .08 }, '-=.22')
     .fromTo(particleWrap, { opacity: 0, scale: .76, rotation: -7 }, { opacity: 1, scale: 1, rotation: 0, duration: .58, ease: 'expo.out' }, '-=.52')
     .fromTo(core, { opacity: 0, scale: .55, filter: 'blur(8px)' }, { opacity: 1, scale: 1, filter: 'blur(0px)', duration: .65, ease: 'back.out(1.4)' }, '-=.36')
@@ -229,14 +257,14 @@ const animateContact = (gsap: any, section: HTMLElement) => {
       });
     });
 
-    if (button) {
-      button.addEventListener('pointerenter', () => {
-        gsap.to(button, { y: -3, scale: 1.015, duration: .22, ease: 'power2.out' });
+    actionButtons.forEach((action) => {
+      action.addEventListener('pointerenter', () => {
+        gsap.to(action, { y: -3, scale: 1.015, duration: .22, ease: 'power2.out' });
       });
-      button.addEventListener('pointerleave', () => {
-        gsap.to(button, { y: 0, scale: 1, duration: .28, ease: 'power2.out' });
+      action.addEventListener('pointerleave', () => {
+        gsap.to(action, { y: 0, scale: 1, duration: .28, ease: 'power2.out' });
       });
-    }
+    });
   });
 };
 
