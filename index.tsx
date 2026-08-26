@@ -3,6 +3,7 @@ import ReactDOM from 'react-dom/client';
 import './style.css';
 import './hero-animation.css';
 import './collaboration-animation.css';
+import './project-layout-fixes.css';
 import App from './App';
 import { initHeroMotion } from './heroMotion';
 import { initCollaborationMotion } from './collaborationMotion';
