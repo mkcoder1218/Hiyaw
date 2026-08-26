@@ -23,6 +23,7 @@ import { initFounderShowcase } from './founderShowcase';
 import { initContactMotion } from './contactMotion';
 import { initSelectedWorkMotion } from './selectedWorkMotion';
 import { initNavScrollSpy } from './navScrollSpy';
+import { initMotionCatchUp } from './motionCatchUp';
 
 const rootElement = document.getElementById('root');
 if (!rootElement) {
@@ -35,6 +36,11 @@ root.render(
     <App />
   </React.StrictMode>
 );
+
+// Install the scroll-aware observer tuning before any section animation creates
+// its IntersectionObserver. This gives every animation more runway and lets
+// active GSAP timelines accelerate when the user scrolls quickly.
+initMotionCatchUp();
 
 initHeroMotion();
 initCollaborationMotion();
