@@ -60,6 +60,12 @@ body,
     max-width: 100%;
   }
 
+  .site-shell,
+  main,
+  section {
+    overflow-x: clip;
+  }
+
   .section-pad {
     padding-left: max(18px, env(safe-area-inset-left)) !important;
     padding-right: max(18px, env(safe-area-inset-right)) !important;
@@ -83,10 +89,249 @@ body,
     box-sizing: border-box;
   }
 
+  /* -------------------------------------------------------
+     Mobile Field Service: stop using the desktop collage as
+     a compressed two-column composition. Copy owns the top,
+     phones get a dedicated stage underneath it.
+     ------------------------------------------------------- */
+  .project--mobile {
+    position: relative !important;
+    display: grid !important;
+    grid-template-columns: minmax(0, 1fr) !important;
+    grid-template-rows: auto auto !important;
+    align-items: start !important;
+    gap: 34px !important;
+    min-height: calc(100svh - 74px) !important;
+    padding-top: 94px !important;
+    padding-bottom: 54px !important;
+    overflow: clip !important;
+  }
+
+  .project--mobile > * {
+    min-width: 0;
+    max-width: 100%;
+  }
+
+  .project-wordmark {
+    position: absolute !important;
+    left: 20px !important;
+    right: 20px !important;
+    top: 28px !important;
+    bottom: auto !important;
+    z-index: 0 !important;
+    width: auto !important;
+    max-width: calc(100% - 40px) !important;
+    margin: 0 !important;
+    font-size: clamp(52px, 15vw, 72px) !important;
+    line-height: .76 !important;
+    letter-spacing: -.065em !important;
+    white-space: normal !important;
+    opacity: .11;
+    pointer-events: none;
+  }
+
+  .project-copy--mobile {
+    position: relative !important;
+    z-index: 3 !important;
+    order: 1 !important;
+    width: 100% !important;
+    max-width: 100% !important;
+    margin: 0 !important;
+    padding: 0 6px !important;
+    justify-self: stretch !important;
+  }
+
+  .project-copy--mobile .project-index {
+    margin-bottom: 14px !important;
+  }
+
+  .project-copy--mobile h3 {
+    max-width: 100% !important;
+    margin: 0 0 20px !important;
+    font-size: clamp(42px, 12.4vw, 58px) !important;
+    line-height: .94 !important;
+    letter-spacing: -.062em !important;
+    overflow-wrap: normal;
+    word-break: normal;
+  }
+
+  .project-copy--mobile p {
+    max-width: 100% !important;
+    margin-bottom: 18px !important;
+    font-size: 14px !important;
+    line-height: 1.58 !important;
+  }
+
+  .project-copy--mobile .project-meta {
+    max-width: 100% !important;
+    white-space: normal !important;
+    line-height: 1.6 !important;
+  }
+
+  .phones-cluster {
+    position: relative !important;
+    order: 2 !important;
+    z-index: 2 !important;
+    width: min(100%, 330px) !important;
+    height: 286px !important;
+    min-height: 286px !important;
+    margin: 0 auto !important;
+    overflow: visible !important;
+    justify-self: center !important;
+  }
+
+  .phones-cluster .phone {
+    position: absolute !important;
+    width: 108px !important;
+    height: 232px !important;
+    margin: 0 !important;
+    transform-origin: 50% 85% !important;
+  }
+
+  .phones-cluster .phone--1 {
+    left: 4px !important;
+    right: auto !important;
+    top: 48px !important;
+  }
+
+  .phones-cluster .phone--2 {
+    left: 50% !important;
+    right: auto !important;
+    top: 10px !important;
+    margin-left: -54px !important;
+  }
+
+  .phones-cluster .phone--3 {
+    left: auto !important;
+    right: 4px !important;
+    top: 50px !important;
+  }
+
+  /* -------------------------------------------------------
+     Why Hyaw: desktop uses an editorial absolute canvas.
+     On phones it becomes a deliberate vertical manifesto so
+     every statement stays in-frame and has its own motion.
+     ------------------------------------------------------- */
+  .why {
+    min-height: calc(100svh - 74px) !important;
+    height: auto !important;
+    padding-top: 52px !important;
+    padding-bottom: 58px !important;
+    overflow: clip !important;
+  }
+
+  .why-label {
+    position: relative !important;
+    z-index: 3 !important;
+    margin: 0 0 30px !important;
+  }
+
+  .principles {
+    position: relative !important;
+    display: grid !important;
+    grid-template-columns: minmax(0, 1fr) !important;
+    gap: 0 !important;
+    width: 100% !important;
+    max-width: 100% !important;
+    min-height: 0 !important;
+    margin: 0 !important;
+  }
+
+  .principle,
+  .principle--1,
+  .principle--2,
+  .principle--3,
+  .principle--4 {
+    position: relative !important;
+    inset: auto !important;
+    left: auto !important;
+    right: auto !important;
+    top: auto !important;
+    bottom: auto !important;
+    width: 100% !important;
+    max-width: 100% !important;
+    min-width: 0 !important;
+    min-height: 0 !important;
+    transform: none !important;
+    text-align: left !important;
+    opacity: 1;
+    padding: 22px 0 24px !important;
+    margin: 0 !important;
+    border: 0 !important;
+    border-top: 1px solid rgba(23, 33, 29, .10) !important;
+    display: grid !important;
+    grid-template-columns: 42px minmax(0, 1fr) !important;
+    grid-template-rows: auto auto !important;
+    column-gap: 8px !important;
+  }
+
+  .principle:first-child {
+    border-top: 0 !important;
+    padding-top: 0 !important;
+  }
+
+  .principle > span,
+  .principle--4 > span {
+    display: block !important;
+    grid-column: 1 !important;
+    grid-row: 1 / 3 !important;
+    margin: 4px 0 0 !important;
+    font-size: 8px !important;
+    line-height: 1 !important;
+  }
+
+  .principle h3,
+  .principle--1 h3,
+  .principle--2 h3,
+  .principle--3 h3,
+  .principle--4 h3 {
+    grid-column: 2 !important;
+    grid-row: 1 !important;
+    width: 100% !important;
+    max-width: 100% !important;
+    margin: 0 !important;
+    font-size: clamp(34px, 10.6vw, 48px) !important;
+    line-height: .88 !important;
+    letter-spacing: -.058em !important;
+    color: var(--ink) !important;
+    overflow-wrap: normal !important;
+    word-break: normal !important;
+  }
+
+  .principle--4 h3 {
+    color: #078a6c !important;
+    font-size: clamp(38px, 11.4vw, 52px) !important;
+  }
+
+  .principle p,
+  .principle--1 p,
+  .principle--2 p,
+  .principle--3 p,
+  .principle--4 p {
+    position: static !important;
+    display: block !important;
+    grid-column: 2 !important;
+    grid-row: 2 !important;
+    width: 100% !important;
+    max-width: 290px !important;
+    margin: 11px 0 0 !important;
+    font-size: 9px !important;
+    line-height: 1.5 !important;
+    color: #66766f !important;
+  }
+
   .process,
   .why {
     padding-left: max(18px, env(safe-area-inset-left)) !important;
     padding-right: max(18px, env(safe-area-inset-right)) !important;
+  }
+
+  .process-head,
+  .process-stage,
+  .process-copy,
+  .process-product {
+    min-width: 0 !important;
+    max-width: 100% !important;
   }
 
   .process-nav {
@@ -112,7 +357,7 @@ body,
 
   .process-nav button {
     flex: 0 0 auto !important;
-    min-width: 56px !important;
+    min-width: 72px !important;
     max-width: none !important;
     padding-left: 0 !important;
     padding-right: 0 !important;
@@ -204,6 +449,79 @@ body,
   }
 
   .process-nav button {
-    min-width: 52px !important;
+    min-width: 68px !important;
+  }
+
+  .project--mobile {
+    padding-top: 88px !important;
+    gap: 28px !important;
+  }
+
+  .project-wordmark {
+    left: 18px !important;
+    right: 18px !important;
+    top: 24px !important;
+    max-width: calc(100% - 36px) !important;
+    font-size: clamp(46px, 14.5vw, 62px) !important;
+  }
+
+  .project-copy--mobile {
+    padding-inline: 4px !important;
+  }
+
+  .project-copy--mobile h3 {
+    font-size: clamp(38px, 11.5vw, 50px) !important;
+  }
+
+  .phones-cluster {
+    width: min(100%, 292px) !important;
+    height: 255px !important;
+    min-height: 255px !important;
+  }
+
+  .phones-cluster .phone {
+    width: 96px !important;
+    height: 214px !important;
+  }
+
+  .phones-cluster .phone--1 {
+    left: 0 !important;
+    top: 40px !important;
+  }
+
+  .phones-cluster .phone--2 {
+    margin-left: -48px !important;
+    top: 6px !important;
+  }
+
+  .phones-cluster .phone--3 {
+    right: 0 !important;
+    top: 42px !important;
+  }
+
+  .why {
+    padding-top: 44px !important;
+    padding-bottom: 48px !important;
+  }
+
+  .principle,
+  .principle--1,
+  .principle--2,
+  .principle--3,
+  .principle--4 {
+    grid-template-columns: 34px minmax(0, 1fr) !important;
+    padding-block: 18px 20px !important;
+  }
+
+  .principle h3,
+  .principle--1 h3,
+  .principle--2 h3,
+  .principle--3 h3,
+  .principle--4 h3 {
+    font-size: clamp(31px, 9.7vw, 43px) !important;
+  }
+
+  .principle--4 h3 {
+    font-size: clamp(35px, 10.5vw, 47px) !important;
   }
 }
