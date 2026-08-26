@@ -12,6 +12,7 @@ import './contact-animation.css';
 import './selected-work-redesign.css';
 import './nav-scrollspy.css';
 import './mobile-responsive-fixes.css';
+import './viewport-scenes.css';
 import App from './App';
 import { initHeroMotion } from './heroMotion';
 import { initCollaborationMotion } from './collaborationMotion';
@@ -38,9 +39,9 @@ root.render(
   </React.StrictMode>
 );
 
-// Install the scroll-aware observer tuning before any section animation creates
-// its IntersectionObserver. This gives every animation more runway and lets
-// active GSAP timelines accelerate when the user scrolls quickly.
+// Install the observer isolation before any section-specific motion module.
+// Each viewport scene now owns its own trigger, while fast scrolling only
+// speeds up the animation that is already playing.
 initMotionCatchUp();
 
 initHabeshaCollageSwap();
