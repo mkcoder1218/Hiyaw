@@ -1,0 +1,76 @@
+/* Final CTA motion layer */
+.contact {
+  overflow: clip;
+}
+
+.contact-grid {
+  position: relative;
+}
+
+.contact h2 {
+  transform-origin: 0 100%;
+}
+
+.contact-sand-word {
+  display: inline-block;
+  white-space: nowrap;
+}
+
+.contact-sand-char {
+  display: inline-block;
+  will-change: transform, opacity, filter;
+  backface-visibility: hidden;
+}
+
+.contact-particles {
+  position: relative;
+  isolation: isolate;
+  will-change: transform;
+}
+
+.contact-particles span {
+  will-change: transform, opacity, filter;
+}
+
+.contact-particles::after {
+  z-index: 3;
+  padding: 10px 13px;
+  border: 1px solid rgba(14, 138, 105, .12);
+  border-radius: 999px;
+  background: rgba(242, 239, 231, .7);
+  backdrop-filter: blur(8px);
+  box-shadow: 0 12px 28px rgba(20, 49, 40, .08);
+}
+
+.contact .button--primary {
+  will-change: transform, box-shadow;
+}
+
+.contact--motion [data-reveal] {
+  opacity: 1 !important;
+  transform: none !important;
+  transition: none !important;
+}
+
+@media (max-width: 980px) {
+  .contact-particles {
+    min-height: 280px;
+  }
+}
+
+@media (max-width: 760px) {
+  .contact-particles {
+    min-height: 240px;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .contact-sand-char,
+  .contact-particles,
+  .contact-particles span,
+  .contact .button--primary {
+    opacity: 1 !important;
+    transform: none !important;
+    filter: none !important;
+  }
+}
