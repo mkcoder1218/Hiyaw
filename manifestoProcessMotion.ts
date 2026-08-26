@@ -45,6 +45,7 @@ const animateManifesto = (gsap: GsapLike) => {
   const reduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
   if (reduced) return;
 
+  const mobile = window.matchMedia('(max-width: 760px)').matches;
   const label = section.querySelector<HTMLElement>('.why-label');
   const principles = Array.from(section.querySelectorAll<HTMLElement>('.principle'));
 
@@ -62,59 +63,102 @@ const animateManifesto = (gsap: GsapLike) => {
   const tl = gsap.timeline({ defaults: { ease: 'power3.out' } });
 
   if (label) {
-    tl.fromTo(label, { opacity: 0, y: 12 }, { opacity: 1, y: 0, duration: 0.45 });
+    tl.fromTo(label, { opacity: 0, y: 12 }, { opacity: 1, y: 0, duration: 0.42 });
   }
 
-  tl.fromTo(
-    principles[0],
-    { opacity: 0 },
-    { opacity: 1, duration: 0.01 },
-    '-=0.05',
-  )
-    .fromTo(
-      numberOf(0),
-      { opacity: 0, x: -18 },
-      { opacity: 1, x: 0, duration: 0.42 },
-      '<',
+  if (mobile) {
+    principles.forEach((principle, index) => {
+      const number = numberOf(index);
+      const title = titleOf(index);
+      const copy = copyOf(index);
+      const start = index === 0 ? '-=0.08' : '-=0.20';
+
+      tl.fromTo(
+        principle,
+        { opacity: 0, y: 22 },
+        { opacity: 1, y: 0, duration: 0.52 },
+        start,
+      );
+
+      if (number) {
+        tl.fromTo(
+          number,
+          { opacity: 0, y: 8 },
+          { opacity: 1, y: 0, duration: 0.3 },
+          '-=0.40',
+        );
+      }
+
+      if (title) {
+        tl.fromTo(
+          title,
+          { opacity: 0, y: 24, clipPath: 'inset(0 0 100% 0)' },
+          { opacity: 1, y: 0, clipPath: 'inset(0 0 0% 0)', duration: 0.58, ease: 'expo.out' },
+          '-=0.28',
+        );
+      }
+
+      if (copy) {
+        tl.fromTo(
+          copy,
+          { opacity: 0, y: 12 },
+          { opacity: 1, y: 0, duration: 0.38 },
+          '-=0.30',
+        );
+      }
+    });
+  } else {
+    tl.fromTo(
+      principles[0],
+      { opacity: 0 },
+      { opacity: 1, duration: 0.01 },
+      '-=0.05',
     )
-    .fromTo(
-      titleOf(0),
-      { opacity: 0, y: 46, skewY: 3, clipPath: 'inset(100% 0 0 0)' },
-      { opacity: 1, y: 0, skewY: 0, clipPath: 'inset(0% 0 0 0)', duration: 0.82 },
-      '-=0.18',
-    )
-    .fromTo(
-      copyOf(0),
-      { opacity: 0, x: 26 },
-      { opacity: 1, x: 0, duration: 0.55 },
-      '-=0.36',
-    )
-    .fromTo(
-      principles[1],
-      { opacity: 0, x: 46, y: 12 },
-      { opacity: 0.5, x: 0, y: 0, duration: 0.72 },
-      '-=0.1',
-    )
-    .fromTo(
-      principles[2],
-      { opacity: 0, x: -34, y: 16 },
-      { opacity: 1, x: 0, y: 0, duration: 0.62 },
-      '-=0.38',
-    )
-    .fromTo(
-      principles[3],
-      { opacity: 0, y: 48, scale: 0.9 },
-      { opacity: 1, y: 0, scale: 1, duration: 0.82, ease: 'back.out(1.18)' },
-      '-=0.18',
-    );
+      .fromTo(
+        numberOf(0),
+        { opacity: 0, x: -18 },
+        { opacity: 1, x: 0, duration: 0.42 },
+        '<',
+      )
+      .fromTo(
+        titleOf(0),
+        { opacity: 0, y: 46, skewY: 3, clipPath: 'inset(100% 0 0 0)' },
+        { opacity: 1, y: 0, skewY: 0, clipPath: 'inset(0% 0 0 0)', duration: 0.82 },
+        '-=0.18',
+      )
+      .fromTo(
+        copyOf(0),
+        { opacity: 0, x: 26 },
+        { opacity: 1, x: 0, duration: 0.55 },
+        '-=0.36',
+      )
+      .fromTo(
+        principles[1],
+        { opacity: 0, x: 46, y: 12 },
+        { opacity: 0.5, x: 0, y: 0, duration: 0.72 },
+        '-=0.1',
+      )
+      .fromTo(
+        principles[2],
+        { opacity: 0, x: -34, y: 16 },
+        { opacity: 1, x: 0, y: 0, duration: 0.62 },
+        '-=0.38',
+      )
+      .fromTo(
+        principles[3],
+        { opacity: 0, y: 48, scale: 0.9 },
+        { opacity: 1, y: 0, scale: 1, duration: 0.82, ease: 'back.out(1.18)' },
+        '-=0.18',
+      );
+  }
 
   tl.call(() => {
     const punchline = titleOf(3);
     if (!punchline) return;
 
     gsap.to(punchline, {
-      y: -5,
-      duration: 2.8,
+      y: mobile ? -2 : -5,
+      duration: mobile ? 3.4 : 2.8,
       ease: 'sine.inOut',
       yoyo: true,
       repeat: -1,
@@ -123,14 +167,15 @@ const animateManifesto = (gsap: GsapLike) => {
 };
 
 const animateProcessState = (gsap: GsapLike, section: HTMLElement) => {
+  const mobile = window.matchMedia('(max-width: 760px)').matches;
   const copyChildren = Array.from(section.querySelectorAll<HTMLElement>('.process-copy > *'));
   const product = section.querySelector<HTMLElement>('.process-product');
   const productChildren = product ? Array.from(product.children) as HTMLElement[] : [];
 
   gsap.fromTo(
     copyChildren,
-    { opacity: 0, y: 18 },
-    { opacity: 1, y: 0, duration: 0.48, stagger: 0.065, ease: 'power3.out' },
+    { opacity: 0, y: mobile ? 12 : 18 },
+    { opacity: 1, y: 0, duration: mobile ? 0.4 : 0.48, stagger: 0.055, ease: 'power3.out' },
   );
 
   if (!productChildren.length) return;
@@ -140,32 +185,32 @@ const animateProcessState = (gsap: GsapLike, section: HTMLElement) => {
   if (backplate) {
     gsap.fromTo(
       backplate,
-      { opacity: 0, y: 26, scaleX: 0.82 },
-      { opacity: 1, y: 0, scaleX: 1, duration: 0.52, ease: 'power3.out' },
+      { opacity: 0, y: mobile ? 18 : 26, scaleX: 0.82 },
+      { opacity: 1, y: 0, scaleX: 1, duration: mobile ? 0.44 : 0.52, ease: 'power3.out' },
     );
   }
 
   if (data) {
     gsap.fromTo(
       data,
-      { opacity: 0, x: 44, y: 12 },
-      { opacity: 1, x: 0, y: 0, duration: 0.58, delay: 0.08, ease: 'power3.out' },
+      { opacity: 0, x: mobile ? 18 : 44, y: 12 },
+      { opacity: 1, x: 0, y: 0, duration: mobile ? 0.48 : 0.58, delay: 0.08, ease: 'power3.out' },
     );
   }
 
   if (logic) {
     gsap.fromTo(
       logic,
-      { opacity: 0, x: -42, y: -8 },
-      { opacity: 1, x: 0, y: 0, duration: 0.58, delay: 0.16, ease: 'power3.out' },
+      { opacity: 0, x: mobile ? -18 : -42, y: -8 },
+      { opacity: 1, x: 0, y: 0, duration: mobile ? 0.48 : 0.58, delay: 0.16, ease: 'power3.out' },
     );
   }
 
   if (interfaceLayer) {
     gsap.fromTo(
       interfaceLayer,
-      { opacity: 0, y: -30, scale: 0.9 },
-      { opacity: 1, y: 0, scale: 1, duration: 0.72, delay: 0.22, ease: 'back.out(1.15)' },
+      { opacity: 0, y: mobile ? -18 : -30, scale: mobile ? 0.95 : 0.9 },
+      { opacity: 1, y: 0, scale: 1, duration: mobile ? 0.58 : 0.72, delay: 0.22, ease: 'back.out(1.15)' },
     );
   }
 };
@@ -179,6 +224,7 @@ const animateProcess = (gsap: GsapLike) => {
   const reduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
   if (reduced) return;
 
+  const mobile = window.matchMedia('(max-width: 760px)').matches;
   const headParts = Array.from(section.querySelectorAll<HTMLElement>('.process-head > *'));
   const navButtons = Array.from(section.querySelectorAll<HTMLButtonElement>('.process-nav button'));
   const stage = section.querySelector<HTMLElement>('.process-stage');
@@ -190,13 +236,13 @@ const animateProcess = (gsap: GsapLike) => {
 
     tl.fromTo(
       headParts,
-      { opacity: 0, y: 28 },
-      { opacity: 1, y: 0, duration: 0.62, stagger: 0.12 },
+      { opacity: 0, y: mobile ? 18 : 28 },
+      { opacity: 1, y: 0, duration: mobile ? 0.52 : 0.62, stagger: 0.1 },
     )
       .fromTo(
         navButtons,
-        { opacity: 0, y: 12 },
-        { opacity: 1, y: 0, duration: 0.38, stagger: 0.065 },
+        { opacity: 0, y: 10 },
+        { opacity: 1, y: 0, duration: mobile ? 0.32 : 0.38, stagger: mobile ? 0.045 : 0.065 },
         '-=0.22',
       )
       .call(() => animateProcessState(gsap, section), undefined, '-=0.05');
@@ -210,7 +256,7 @@ const animateProcess = (gsap: GsapLike) => {
     }
   };
 
-  observeOnce(section, runIntro, 0.18);
+  observeOnce(section, runIntro, mobile ? 0.12 : 0.18);
 
   navButtons.forEach((button) => {
     button.addEventListener('click', () => {
@@ -225,7 +271,8 @@ export const initManifestoProcessMotion = () => {
   waitForGsap((gsap) => {
     const manifesto = document.querySelector('.why');
     if (manifesto) {
-      observeOnce(manifesto, () => animateManifesto(gsap), 0.16);
+      const mobile = window.matchMedia('(max-width: 760px)').matches;
+      observeOnce(manifesto, () => animateManifesto(gsap), mobile ? 0.12 : 0.16);
     }
 
     animateProcess(gsap);
