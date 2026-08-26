@@ -12,7 +12,7 @@ declare global {
 
 let installed = false;
 
-const installEarlyIntersectionObservers = () => {
+const installIsolatedIntersectionObservers = () => {
   const NativeObserver = window.IntersectionObserver;
   if (!NativeObserver || (window as any).__hyawMotionObserverPatched) return;
 
@@ -27,17 +27,16 @@ const installEarlyIntersectionObservers = () => {
       : [typeof options.threshold === 'number' ? options.threshold : 0];
     const highestThreshold = Math.max(...thresholdValues);
 
-    // All of the portfolio entrance observers use low thresholds. Give those
-    // observers a much larger runway so their motion begins before the section
-    // reaches the viewport instead of starting after the user has already
-    // scrolled onto it.
-    const isEntranceObserver = !options.root && highestThreshold <= 0.3;
+    // Entrance observers should fire only after their target has moved into the
+    // current viewport's active band. The old implementation expanded the root
+    // by 55% in both directions, which let animations finish before the user
+    // actually reached the section. Full-page scenes now get an isolated band.
+    const isEntranceObserver = !options.root && highestThreshold <= 0.35;
 
     const tunedOptions: IntersectionObserverInit = isEntranceObserver
       ? {
           ...options,
-          threshold: 0.035,
-          rootMargin: '55% 0px 55% 0px',
+          rootMargin: '-14% 0px -20% 0px',
         }
       : options;
 
@@ -46,16 +45,6 @@ const installEarlyIntersectionObservers = () => {
 
   MotionAwareObserver.prototype = NativeObserver.prototype;
   (window as any).IntersectionObserver = MotionAwareObserver;
-};
-
-const revealNearbyFallbacks = () => {
-  const top = -window.innerHeight * 0.45;
-  const bottom = window.innerHeight * 1.45;
-
-  document.querySelectorAll<HTMLElement>('[data-reveal]:not(.is-visible)').forEach((element) => {
-    const rect = element.getBoundingClientRect();
-    if (rect.bottom >= top && rect.top <= bottom) element.classList.add('is-visible');
-  });
 };
 
 const installVelocityCatchUp = () => {
@@ -72,7 +61,7 @@ const installVelocityCatchUp = () => {
 
   const settle = () => {
     window.clearTimeout(resetTimer);
-    resetTimer = window.setTimeout(() => setTimelineSpeed(1), 150);
+    resetTimer = window.setTimeout(() => setTimelineSpeed(1), 130);
   };
 
   const sampleScroll = () => {
@@ -83,16 +72,14 @@ const installVelocityCatchUp = () => {
     const elapsed = Math.max(now - lastTime, 16);
     const velocity = Math.abs(y - lastY) / elapsed;
 
-    // Normal reading speed keeps the intended choreography. Faster flicks
-    // automatically speed up active entrance timelines so animations cannot
-    // remain several sections behind the user's scroll position.
-    if (velocity > 3.2) setTimelineSpeed(5);
-    else if (velocity > 1.8) setTimelineSpeed(3.6);
-    else if (velocity > 0.9) setTimelineSpeed(2.25);
-    else if (velocity > 0.45) setTimelineSpeed(1.45);
+    // Preserve the choreography instead of effectively skipping it. Fast
+    // scrolling still gives the currently playing entrance a modest boost, but
+    // future sections are never force-revealed or pre-triggered.
+    if (velocity > 3.0) setTimelineSpeed(2.35);
+    else if (velocity > 1.7) setTimelineSpeed(1.9);
+    else if (velocity > 0.9) setTimelineSpeed(1.5);
+    else if (velocity > 0.45) setTimelineSpeed(1.2);
     else setTimelineSpeed(1);
-
-    if (velocity > 0.8) revealNearbyFallbacks();
 
     lastY = y;
     lastTime = now;
@@ -106,8 +93,6 @@ const installVelocityCatchUp = () => {
   };
 
   window.addEventListener('scroll', onScroll, { passive: true });
-  window.addEventListener('resize', revealNearbyFallbacks);
-  revealNearbyFallbacks();
 };
 
 export const initMotionCatchUp = () => {
@@ -121,9 +106,9 @@ export const initMotionCatchUp = () => {
     return;
   }
 
-  // Install this before the section-specific motion modules create their
-  // IntersectionObservers.
-  installEarlyIntersectionObservers();
+  // Install before section-specific motion modules create their observers.
+  // This keeps each full-page scene responsible for its own entrance.
+  installIsolatedIntersectionObservers();
   installVelocityCatchUp();
 };
 
