@@ -5,12 +5,6 @@ type GsapLike = {
   fromTo: (targets: any, fromVars: Record<string, unknown>, toVars: Record<string, unknown>) => any;
 };
 
-declare global {
-  interface Window {
-    gsap?: GsapLike;
-  }
-}
-
 const enhanceEnterpriseMarkup = (work: HTMLElement) => {
   if (work.dataset.selectedEnhanced === 'true') return;
   work.dataset.selectedEnhanced = 'true';
@@ -171,7 +165,7 @@ const animateEnterprise = (gsap: GsapLike, enterprise: HTMLElement) => {
 
 const waitForSelectedWork = (attempt = 0) => {
   const work = document.querySelector<HTMLElement>('.work');
-  const gsap = window.gsap;
+  const gsap = (window as any).gsap as GsapLike | undefined;
 
   if (!work || !gsap) {
     if (attempt < 120) requestAnimationFrame(() => waitForSelectedWork(attempt + 1));
