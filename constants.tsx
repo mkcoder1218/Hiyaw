@@ -96,7 +96,7 @@ export const TEAM: TeamMember[] = [
     id: 2,
     name: "Mikeyas Derje",
     role: "Founding Team",
-    image: MIKEYAS_IMAGE,
+    image: "/team/mikeyas.jpg",
     bio: "Engineering and shipping Hyaw's digital products, platforms, and client solutions."
   }
 ];
