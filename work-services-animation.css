@@ -1,0 +1,45 @@
+.project--architecture[data-gsap-architecture='true'],
+.services[data-gsap-services='true'] {
+  isolation: isolate;
+}
+
+.project--architecture[data-gsap-architecture='true'] .project-copy,
+.project--architecture[data-gsap-architecture='true'] .architecture-graphic,
+.services[data-gsap-services='true'] .services-intro,
+.services[data-gsap-services='true'] .services-list,
+.services[data-gsap-services='true'] .services-orbit {
+  opacity: 1 !important;
+  transform: none !important;
+  transition: none !important;
+}
+
+.project--architecture[data-gsap-architecture='true'] .arch-plane,
+.project--architecture[data-gsap-architecture='true'] .arch-label,
+.services[data-gsap-services='true'] .service-row,
+.services[data-gsap-services='true'] .orbit-card {
+  will-change: transform, opacity;
+}
+
+.services-orbit {
+  --orbit-line-scale: 1;
+}
+
+.services-orbit::before {
+  transform: scaleY(var(--orbit-line-scale));
+  transform-origin: 50% 0%;
+  transition: none;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .project--architecture .arch-plane,
+  .project--architecture .arch-label,
+  .services .service-row,
+  .services .orbit-card {
+    opacity: 1 !important;
+    transform: none !important;
+  }
+
+  .services-orbit {
+    --orbit-line-scale: 1 !important;
+  }
+}
