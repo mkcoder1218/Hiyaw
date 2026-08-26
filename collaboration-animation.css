@@ -1,0 +1,45 @@
+.collaboration--gsap .collaboration-lines {
+  overflow: visible;
+  pointer-events: none;
+}
+
+.collaboration--gsap .collaboration-lines path {
+  fill: none;
+  stroke: rgba(14, 138, 105, .42);
+  stroke-width: 1.4;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  vector-effect: non-scaling-stroke;
+}
+
+.collaboration--gsap .collab-center,
+.collaboration--gsap .collab-node {
+  will-change: transform, opacity;
+}
+
+.collaboration--gsap .collab-node {
+  transition: border-color .22s ease, background-color .22s ease, box-shadow .22s ease;
+}
+
+.collaboration--gsap .collab-node:hover {
+  border-color: rgba(20, 163, 127, .55);
+  box-shadow: 0 10px 22px rgba(23, 33, 29, .07);
+}
+
+@media (max-width: 640px) {
+  .collaboration--gsap .collaboration-lines {
+    display: none;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .collaboration--gsap .collab-intro .eyebrow,
+  .collaboration--gsap .collab-intro h2,
+  .collaboration--gsap .collab-intro p,
+  .collaboration--gsap .collab-center,
+  .collaboration--gsap .collab-node,
+  .collaboration--gsap .collab-footer {
+    opacity: 1 !important;
+    transform: none !important;
+  }
+}
