@@ -11,6 +11,7 @@ import './founder-showcase.css';
 import './contact-animation.css';
 import './selected-work-redesign.css';
 import './nav-scrollspy.css';
+import './mobile-responsive-fixes.css';
 import App from './App';
 import { initHeroMotion } from './heroMotion';
 import { initCollaborationMotion } from './collaborationMotion';
