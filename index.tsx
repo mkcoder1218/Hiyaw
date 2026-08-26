@@ -32,6 +32,11 @@ if (!rootElement) {
   throw new Error("Could not find root element to mount to");
 }
 
+// Install this before React mounts the collage. The MutationObserver swaps the
+// legacy image sources during the same DOM commit, so cached old photos cannot
+// flash back onto the page while React is rendering.
+initHabeshaCollageSwap();
+
 const root = ReactDOM.createRoot(rootElement);
 root.render(
   <React.StrictMode>
@@ -44,7 +49,6 @@ root.render(
 // speeds up the animation that is already playing.
 initMotionCatchUp();
 
-initHabeshaCollageSwap();
 initHeroMotion();
 initCollaborationMotion();
 initMobileProjectMotion();
