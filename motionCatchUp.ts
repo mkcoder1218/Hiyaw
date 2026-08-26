@@ -12,6 +12,8 @@ declare global {
 
 let installed = false;
 
+const BASE_SPEED = 1.15;
+
 const installIsolatedIntersectionObservers = () => {
   const NativeObserver = window.IntersectionObserver;
   if (!NativeObserver || (window as any).__hyawMotionObserverPatched) return;
@@ -28,9 +30,8 @@ const installIsolatedIntersectionObservers = () => {
     const highestThreshold = Math.max(...thresholdValues);
 
     // Entrance observers should fire only after their target has moved into the
-    // current viewport's active band. The old implementation expanded the root
-    // by 55% in both directions, which let animations finish before the user
-    // actually reached the section. Full-page scenes now get an isolated band.
+    // current viewport's active band. Full-page scenes keep their animation
+    // isolated so neighboring scenes do not start early.
     const isEntranceObserver = !options.root && highestThreshold <= 0.35;
 
     const tunedOptions: IntersectionObserverInit = isEntranceObserver
@@ -59,9 +60,19 @@ const installVelocityCatchUp = () => {
     timeline.timeScale(speed);
   };
 
+  const applyBaseSpeed = (attempt = 0) => {
+    const timeline = window.gsap?.globalTimeline;
+    if (timeline?.timeScale) {
+      timeline.timeScale(BASE_SPEED);
+      return;
+    }
+
+    if (attempt < 120) requestAnimationFrame(() => applyBaseSpeed(attempt + 1));
+  };
+
   const settle = () => {
     window.clearTimeout(resetTimer);
-    resetTimer = window.setTimeout(() => setTimelineSpeed(1), 130);
+    resetTimer = window.setTimeout(() => setTimelineSpeed(BASE_SPEED), 130);
   };
 
   const sampleScroll = () => {
@@ -72,14 +83,13 @@ const installVelocityCatchUp = () => {
     const elapsed = Math.max(now - lastTime, 16);
     const velocity = Math.abs(y - lastY) / elapsed;
 
-    // Preserve the choreography instead of effectively skipping it. Fast
-    // scrolling still gives the currently playing entrance a modest boost, but
-    // future sections are never force-revealed or pre-triggered.
-    if (velocity > 3.0) setTimelineSpeed(2.35);
-    else if (velocity > 1.7) setTimelineSpeed(1.9);
-    else if (velocity > 0.9) setTimelineSpeed(1.5);
-    else if (velocity > 0.45) setTimelineSpeed(1.2);
-    else setTimelineSpeed(1);
+    // Keep the normal choreography slightly faster everywhere, then add only a
+    // modest temporary boost while the user scrolls quickly.
+    if (velocity > 3.0) setTimelineSpeed(2.55);
+    else if (velocity > 1.7) setTimelineSpeed(2.05);
+    else if (velocity > 0.9) setTimelineSpeed(1.68);
+    else if (velocity > 0.45) setTimelineSpeed(1.38);
+    else setTimelineSpeed(BASE_SPEED);
 
     lastY = y;
     lastTime = now;
@@ -93,6 +103,7 @@ const installVelocityCatchUp = () => {
   };
 
   window.addEventListener('scroll', onScroll, { passive: true });
+  applyBaseSpeed();
 };
 
 export const initMotionCatchUp = () => {
