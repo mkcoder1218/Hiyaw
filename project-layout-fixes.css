@@ -1,0 +1,98 @@
+.project--mobile {
+  overflow: clip;
+  padding-top: 72px;
+  padding-bottom: 72px;
+}
+
+.project--mobile .project-wordmark {
+  left: clamp(28px, 4vw, 72px);
+  top: 72px;
+  max-width: calc(50% - 36px);
+  font-size: clamp(76px, 10.4vw, 164px);
+  line-height: .78;
+  white-space: nowrap;
+}
+
+.project--mobile .phones-cluster {
+  width: 100%;
+  min-width: 0;
+  max-width: 720px;
+  justify-self: start;
+  overflow: visible;
+}
+
+.project--mobile .phones-cluster .phone--1 {
+  left: 13%;
+}
+
+.project--mobile .phones-cluster .phone--2 {
+  left: 38%;
+}
+
+.project--mobile .phones-cluster .phone--3 {
+  left: 61%;
+}
+
+.project--mobile .project-copy--mobile {
+  min-width: 0;
+  max-width: 470px;
+  margin-left: clamp(0px, 2vw, 30px);
+}
+
+.project--mobile .project-copy--mobile h3 {
+  max-width: 430px;
+}
+
+@media (max-width: 1220px) {
+  .project--mobile .project-wordmark {
+    left: 28px;
+    max-width: 54%;
+    font-size: clamp(72px, 10vw, 132px);
+  }
+
+  .project--mobile .phones-cluster .phone--1 { left: 6%; }
+  .project--mobile .phones-cluster .phone--2 { left: 34%; }
+  .project--mobile .phones-cluster .phone--3 { left: 60%; }
+}
+
+@media (max-width: 980px) {
+  .project--mobile {
+    padding-top: 64px;
+    padding-bottom: 64px;
+  }
+
+  .project--mobile .project-wordmark {
+    left: 24px;
+    top: 42px;
+    max-width: calc(100% - 48px);
+    font-size: clamp(70px, 15vw, 118px);
+  }
+
+  .project--mobile .phones-cluster {
+    width: min(620px, 100%);
+    justify-self: center;
+  }
+}
+
+@media (max-width: 640px) {
+  .project--mobile {
+    padding-top: 54px;
+    padding-bottom: 54px;
+  }
+
+  .project--mobile .project-wordmark {
+    left: 18px;
+    top: 34px;
+    max-width: calc(100% - 36px);
+    font-size: clamp(58px, 20vw, 82px);
+    line-height: .8;
+  }
+
+  .project--mobile .phones-cluster {
+    min-height: 360px;
+  }
+
+  .project--mobile .phones-cluster .phone--1 { left: 2%; }
+  .project--mobile .phones-cluster .phone--2 { left: 32%; }
+  .project--mobile .phones-cluster .phone--3 { left: 62%; }
+}
