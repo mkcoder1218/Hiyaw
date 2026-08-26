@@ -1,0 +1,511 @@
+/* Pen.dev reference alignment for Surface closing, Why Hyaw and Process */
+
+/* The Surface section resolves into a compact dark statement like the source design. */
+.surface-system {
+  padding-bottom: 0 !important;
+}
+
+.surface-closing {
+  grid-column: 1 / -1;
+  width: 100vw;
+  max-width: none !important;
+  margin-left: calc(50% - 50vw) !important;
+  margin-right: calc(50% - 50vw) !important;
+  margin-top: 42px !important;
+  min-height: 118px;
+  display: grid;
+  place-items: center;
+  padding: 24px max(24px, calc((100vw - var(--max)) / 2));
+  background: #142720;
+  color: #f4f1e9;
+  text-align: center;
+  font-size: clamp(19px, 2.2vw, 34px) !important;
+  line-height: .95 !important;
+  position: relative;
+  z-index: 5;
+}
+
+/* WHY HYAW — no 2x2 grid. One editorial canvas. */
+.why {
+  min-height: 670px;
+  padding-top: 58px !important;
+  padding-bottom: 74px !important;
+  background: linear-gradient(180deg, #f0ede5 0%, #e4f4ee 100%) !important;
+  overflow: hidden;
+}
+
+.why-label {
+  margin-bottom: 26px !important;
+  position: relative;
+  z-index: 5;
+}
+
+.principles {
+  position: relative;
+  display: block !important;
+  min-height: 510px;
+  max-width: 1180px;
+  margin: 0 auto;
+}
+
+.principle {
+  position: absolute !important;
+  min-height: 0 !important;
+  padding: 0 !important;
+  border: 0 !important;
+  display: block !important;
+  background: transparent !important;
+  will-change: transform, opacity;
+}
+
+.principle > span {
+  display: block;
+  font-family: 'DM Mono', monospace;
+  color: var(--mint-dark);
+  font-size: 8px !important;
+  letter-spacing: .08em;
+  margin-bottom: 10px;
+}
+
+.principle > span::after {
+  content: ' / 04';
+  color: #7d8c86;
+}
+
+.principle h3 {
+  margin: 0 !important;
+  white-space: normal;
+  line-height: .82 !important;
+  letter-spacing: -.065em !important;
+}
+
+.principle p {
+  margin: 14px 0 0 !important;
+  max-width: 290px !important;
+  font-size: 9px !important;
+  line-height: 1.5 !important;
+  color: #66766f;
+}
+
+/* 01 is the dominant opening belief, exactly like the reference. */
+.principle--1 {
+  left: 0;
+  top: 8px;
+  width: 47%;
+}
+
+.principle--1 h3 {
+  font-size: clamp(50px, 6vw, 82px) !important;
+}
+
+.principle--1 p {
+  position: absolute;
+  left: 73%;
+  top: 64px;
+  width: 250px;
+}
+
+/* 02 intentionally behaves like the next thought entering the canvas. */
+.principle--2 {
+  right: 2%;
+  top: 210px;
+  width: 35%;
+  opacity: .5;
+}
+
+.principle--2 h3 {
+  font-size: clamp(23px, 2.6vw, 36px) !important;
+  color: #6e7a75;
+}
+
+.principle--2 p {
+  max-width: 235px !important;
+  font-size: 8px !important;
+}
+
+/* 03 becomes a quiet annotation instead of a second card. */
+.principle--3 {
+  left: 2%;
+  bottom: 78px;
+  width: 31%;
+}
+
+.principle--3 h3 {
+  font-size: clamp(17px, 1.65vw, 24px) !important;
+  color: #81908a;
+}
+
+.principle--3 p {
+  max-width: 230px !important;
+  font-size: 8px !important;
+}
+
+/* 04 is the punchline in the design — large, centered, green. */
+.principle--4 {
+  left: 50%;
+  bottom: 8px;
+  width: 56%;
+  transform: translateX(-50%);
+  text-align: center;
+}
+
+.principle--4 > span,
+.principle--4 p {
+  display: none;
+}
+
+.principle--4 h3 {
+  font-size: clamp(46px, 5.2vw, 76px) !important;
+  color: #078a6c !important;
+  line-height: .86 !important;
+}
+
+/* PROCESS — compact like the reference instead of a large two-column panel. */
+.process {
+  background: #e1f2ec !important;
+  padding-top: 54px !important;
+  padding-bottom: 64px !important;
+  overflow: hidden;
+}
+
+.process-head {
+  display: grid !important;
+  grid-template-columns: minmax(0, .8fr) minmax(240px, .45fr) !important;
+  gap: 42px !important;
+  align-items: end !important;
+  max-width: 1120px;
+  margin: 0 auto;
+}
+
+.process-head h2 {
+  max-width: 650px !important;
+  font-size: clamp(34px, 4.2vw, 58px) !important;
+  line-height: .9 !important;
+}
+
+.process-head p {
+  justify-self: end !important;
+  max-width: 300px !important;
+  font-size: 9px !important;
+  line-height: 1.5 !important;
+}
+
+.process-nav {
+  max-width: 1120px;
+  margin: 32px auto 28px !important;
+  border-bottom: 1px solid rgba(23, 33, 29, .18) !important;
+}
+
+.process-nav button {
+  min-width: 0;
+  padding: 0 3px 11px !important;
+  opacity: .35 !important;
+}
+
+.process-nav button.active {
+  opacity: 1 !important;
+}
+
+.process-nav button::after {
+  left: 4px !important;
+  width: 4px !important;
+  height: 4px !important;
+  bottom: -2.5px !important;
+}
+
+.process-nav button.active::after {
+  width: 8px !important;
+  height: 8px !important;
+  bottom: -4.5px !important;
+}
+
+.process-nav span {
+  font-size: 6px !important;
+}
+
+.process-nav strong {
+  margin-top: 4px !important;
+  font-size: 7px !important;
+  font-weight: 500 !important;
+}
+
+.process-stage {
+  max-width: 1120px;
+  margin: 0 auto;
+  min-height: 300px !important;
+  display: grid !important;
+  grid-template-columns: .58fr 1.42fr !important;
+  gap: 30px !important;
+  align-items: center !important;
+}
+
+.process-copy {
+  align-self: center;
+}
+
+.process-copy > span {
+  font-size: 7px !important;
+}
+
+.process-copy h3 {
+  margin: 10px 0 13px !important;
+  font-size: clamp(54px, 6.7vw, 88px) !important;
+  line-height: .78 !important;
+}
+
+.process-copy strong {
+  margin-bottom: 6px !important;
+  font-size: 11px !important;
+  max-width: 250px !important;
+}
+
+.process-copy p {
+  font-size: 8px !important;
+  max-width: 280px !important;
+  line-height: 1.5 !important;
+}
+
+.process-product {
+  height: 275px !important;
+  max-width: 610px;
+  width: 100%;
+  justify-self: center;
+}
+
+.process-interface {
+  width: 56% !important;
+  left: 12% !important;
+  top: 12px !important;
+  z-index: 5 !important;
+}
+
+.process-logic {
+  left: 38% !important;
+  right: 8% !important;
+  height: 64px !important;
+  bottom: 95px !important;
+}
+
+.process-data {
+  left: 26% !important;
+  right: 3% !important;
+  height: 58px !important;
+  bottom: 49px !important;
+}
+
+.process-backplate {
+  left: 17% !important;
+  right: 15% !important;
+  height: 42px !important;
+  bottom: 16px !important;
+}
+
+/* GSAP owns the movement when JS is ready. */
+.why[data-manifesto-motion='ready'] .principle,
+.process[data-process-motion='ready'] .process-head > *,
+.process[data-process-motion='ready'] .process-nav button,
+.process[data-process-motion='ready'] .process-copy > *,
+.process[data-process-motion='ready'] .process-product > * {
+  will-change: transform, opacity;
+}
+
+@media (max-width: 980px) {
+  .why {
+    min-height: 630px;
+  }
+
+  .principles {
+    min-height: 480px;
+  }
+
+  .principle--1 {
+    width: 61%;
+  }
+
+  .principle--1 p {
+    left: 68%;
+  }
+
+  .principle--2 {
+    width: 40%;
+  }
+
+  .principle--4 {
+    width: 72%;
+  }
+
+  .process-stage {
+    grid-template-columns: .62fr 1.38fr !important;
+  }
+}
+
+@media (max-width: 640px) {
+  .surface-closing {
+    min-height: 92px;
+    padding: 20px 18px;
+    font-size: 20px !important;
+  }
+
+  .why {
+    min-height: 500px;
+    padding: 30px 18px 40px !important;
+  }
+
+  .why-label {
+    margin-bottom: 14px !important;
+  }
+
+  .principles {
+    min-height: 420px;
+  }
+
+  .principle--1 {
+    left: 0;
+    top: 0;
+    width: 78%;
+  }
+
+  .principle--1 h3 {
+    font-size: 34px !important;
+  }
+
+  .principle--1 p {
+    left: 76%;
+    top: 44px;
+    width: 126px;
+    font-size: 6px !important;
+  }
+
+  .principle--2 {
+    right: 0;
+    top: 165px;
+    width: 48%;
+  }
+
+  .principle--2 h3 {
+    font-size: 15px !important;
+  }
+
+  .principle--2 p {
+    display: none;
+  }
+
+  .principle--3 {
+    left: 0;
+    bottom: 95px;
+    width: 44%;
+  }
+
+  .principle--3 h3 {
+    font-size: 11px !important;
+  }
+
+  .principle--3 p {
+    display: none;
+  }
+
+  .principle--4 {
+    width: 90%;
+    bottom: 15px;
+  }
+
+  .principle--4 h3 {
+    font-size: 28px !important;
+  }
+
+  .process {
+    padding: 38px 18px 48px !important;
+  }
+
+  .process-head {
+    grid-template-columns: 1fr !important;
+    gap: 8px !important;
+  }
+
+  .process-head h2 {
+    font-size: 29px !important;
+    max-width: 300px !important;
+  }
+
+  .process-head p {
+    justify-self: start !important;
+    font-size: 7px !important;
+    max-width: 250px !important;
+  }
+
+  .process-nav {
+    margin: 18px 0 22px !important;
+    grid-template-columns: repeat(7, minmax(42px, 1fr)) !important;
+    overflow: visible !important;
+  }
+
+  .process-nav button {
+    min-width: 0 !important;
+    padding-inline: 0 !important;
+  }
+
+  .process-nav strong {
+    font-size: 5px !important;
+    white-space: nowrap;
+  }
+
+  .process-stage {
+    grid-template-columns: .62fr 1.38fr !important;
+    gap: 8px !important;
+    min-height: 210px !important;
+  }
+
+  .process-copy h3 {
+    font-size: 40px !important;
+  }
+
+  .process-copy strong {
+    font-size: 7px !important;
+  }
+
+  .process-copy p {
+    font-size: 6px !important;
+  }
+
+  .process-product {
+    height: 190px !important;
+    transform: scale(.88);
+    transform-origin: center;
+  }
+
+  .process-interface {
+    width: 67% !important;
+    left: 4% !important;
+  }
+
+  .process-logic {
+    left: 35% !important;
+    right: 2% !important;
+    height: 46px !important;
+    bottom: 69px !important;
+  }
+
+  .process-data {
+    left: 20% !important;
+    height: 42px !important;
+    bottom: 38px !important;
+  }
+
+  .process-backplate {
+    left: 11% !important;
+    right: 9% !important;
+    height: 31px !important;
+    bottom: 10px !important;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .why .principle,
+  .process .process-head > *,
+  .process .process-nav button,
+  .process .process-copy > *,
+  .process .process-product > * {
+    opacity: 1 !important;
+    transform: none !important;
+  }
+}
