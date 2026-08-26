@@ -1,0 +1,118 @@
+/* Full-viewport scene rhythm
+   Each major story beat owns at least one visible viewport so its GSAP entrance
+   has room to play before the next scene becomes eligible to animate. */
+
+:root {
+  --hyaw-header-height: 74px;
+  --hyaw-scene-height: calc(100vh - var(--hyaw-header-height));
+  --hyaw-scene-height: calc(100svh - var(--hyaw-header-height));
+}
+
+html {
+  scroll-padding-top: var(--hyaw-header-height);
+}
+
+main > section {
+  min-block-size: var(--hyaw-scene-height);
+  box-sizing: border-box;
+  scroll-margin-top: var(--hyaw-header-height);
+}
+
+/* Work is a sequence of separate scenes: intro, then one viewport per case study. */
+.work {
+  padding-top: 0;
+  padding-bottom: 0;
+}
+
+.work > .section-head {
+  min-block-size: var(--hyaw-scene-height);
+  box-sizing: border-box;
+  margin-bottom: 0;
+  padding-block: clamp(76px, 10vh, 124px);
+  align-content: center;
+  align-items: center;
+  border-bottom: 1px solid var(--line);
+}
+
+.work > .project {
+  min-block-size: var(--hyaw-scene-height);
+  box-sizing: border-box;
+  padding-block: clamp(72px, 9vh, 112px);
+}
+
+/* About contains two independently animated scenes. Give both their own page. */
+.about {
+  padding-bottom: 0;
+}
+
+.about > .habesha-collage {
+  height: max(650px, var(--hyaw-scene-height));
+  min-block-size: var(--hyaw-scene-height);
+  box-sizing: border-box;
+}
+
+.about > .founders {
+  min-block-size: max(650px, var(--hyaw-scene-height));
+  box-sizing: border-box;
+}
+
+/* Keep single-scene sections from collapsing below the visible screen. */
+.hero,
+.collaboration,
+.services,
+.surface-system,
+.why,
+.process,
+.insights,
+.contact {
+  min-block-size: var(--hyaw-scene-height);
+}
+
+@media (max-width: 980px) {
+  .work > .section-head {
+    padding-block: 72px;
+  }
+
+  .work > .project {
+    padding-block: 64px;
+  }
+
+  .about > .habesha-collage {
+    height: max(600px, var(--hyaw-scene-height));
+  }
+
+  .about > .founders {
+    min-block-size: var(--hyaw-scene-height);
+  }
+}
+
+@media (max-width: 640px) {
+  .work > .section-head {
+    min-block-size: var(--hyaw-scene-height);
+    padding-block: 56px;
+  }
+
+  .work > .project {
+    min-block-size: var(--hyaw-scene-height);
+    padding-block: 52px;
+  }
+
+  .about > .habesha-collage {
+    height: max(520px, var(--hyaw-scene-height));
+  }
+
+  .about > .founders {
+    min-block-size: var(--hyaw-scene-height);
+  }
+
+  .hero,
+  .collaboration,
+  .services,
+  .surface-system,
+  .why,
+  .process,
+  .insights,
+  .contact {
+    min-block-size: var(--hyaw-scene-height);
+  }
+}
