@@ -4,10 +4,12 @@ import './style.css';
 import './hero-animation.css';
 import './collaboration-animation.css';
 import './project-layout-fixes.css';
+import './work-services-animation.css';
 import App from './App';
 import { initHeroMotion } from './heroMotion';
 import { initCollaborationMotion } from './collaborationMotion';
 import { initMobileProjectMotion } from './mobileProjectMotion';
+import { initWorkServicesMotion } from './workServicesMotion';
 
 const rootElement = document.getElementById('root');
 if (!rootElement) {
@@ -24,3 +26,4 @@ root.render(
 initHeroMotion();
 initCollaborationMotion();
 initMobileProjectMotion();
+initWorkServicesMotion();
