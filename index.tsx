@@ -26,6 +26,7 @@ import { initSelectedWorkMotion } from './selectedWorkMotion';
 import { initNavScrollSpy } from './navScrollSpy';
 import { initMotionCatchUp } from './motionCatchUp';
 import { initHabeshaCollageSwap } from './habeshaCollageSwap';
+import { initContactDetails } from './contactDetails';
 
 const rootElement = document.getElementById('root');
 if (!rootElement) {
@@ -36,6 +37,10 @@ if (!rootElement) {
 // legacy image sources during the same DOM commit, so cached old photos cannot
 // flash back onto the page while React is rendering.
 initHabeshaCollageSwap();
+
+// Keep the public contact information authoritative even though the richer
+// contact UI is assembled dynamically after React mounts.
+initContactDetails();
 
 const root = ReactDOM.createRoot(rootElement);
 root.render(
