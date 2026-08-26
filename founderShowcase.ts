@@ -1,12 +1,14 @@
 const founderProfiles = [
   {
     selector: '.founder--biruk',
+    role: 'CEO',
     story:
       'Leads the business side of Hyaw — shaping partnerships, growth, positioning, and the commercial direction around the products we build.',
     focus: ['Business strategy', 'Partnerships', 'Growth'],
   },
   {
     selector: '.founder--mikeyas',
+    role: 'Co-Founder',
     story:
       'Leads product and engineering — turning complex problems into clear systems, technical decisions, and software that can survive production.',
     focus: ['Product systems', 'Architecture', 'Engineering'],
@@ -23,8 +25,12 @@ const enhanceFounder = (profile: (typeof founderProfiles)[number]) => {
   founder.dataset.profileEnhanced = 'true';
 
   // Keep each founder represented by one primary portrait only.
-  // The previous duplicated/magnified face capture has been removed.
   founder.querySelectorAll('.founder-face-lens').forEach((lens) => lens.remove());
+
+  // Keep the visible leadership titles authoritative even though the base
+  // markup was created before the current company roles were finalized.
+  const role = meta.querySelector<HTMLElement>('small');
+  if (role) role.textContent = profile.role;
 
   const story = document.createElement('p');
   story.className = 'founder-story';
