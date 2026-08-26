@@ -18,9 +18,20 @@ const enhanceFounder = (profile: (typeof founderProfiles)[number]) => {
   if (!founder || founder.dataset.profileEnhanced === 'true') return;
 
   const meta = founder.querySelector<HTMLElement>('.founder-meta');
+  const image = founder.querySelector<HTMLImageElement>('img');
   if (!meta) return;
 
   founder.dataset.profileEnhanced = 'true';
+
+  /* Re-use the same source image as a magnified face/detail window. This keeps
+     the section compact while making the founders immediately recognizable. */
+  if (image) {
+    const lens = document.createElement('div');
+    lens.className = 'founder-face-lens';
+    lens.setAttribute('aria-hidden', 'true');
+    lens.style.setProperty('--founder-portrait', `url("${image.currentSrc || image.src}")`);
+    founder.appendChild(lens);
+  }
 
   const story = document.createElement('p');
   story.className = 'founder-story';
