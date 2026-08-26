@@ -75,24 +75,108 @@
 }
 
 @media (max-width: 640px) {
+  /*
+   * The work section itself has an 18px mobile gutter. The two full-bleed
+   * project panels must explicitly reclaim that gutter or they render like a
+   * narrow column inside the viewport.
+   */
+  .work .project--mobile,
+  .work .project--architecture {
+    width: calc(100% + 36px) !important;
+    max-width: none !important;
+    margin-left: -18px !important;
+    margin-right: -18px !important;
+    padding-left: 18px !important;
+    padding-right: 18px !important;
+    box-sizing: border-box;
+  }
+
   .project--mobile {
-    padding-top: 54px;
-    padding-bottom: 54px;
+    padding-top: 48px;
+    padding-bottom: 52px;
   }
 
   .project--mobile .project-wordmark {
     left: 18px;
-    top: 34px;
-    max-width: calc(100% - 36px);
-    font-size: clamp(58px, 20vw, 82px);
+    top: 30px;
+    width: calc(100% - 36px);
+    max-width: none;
+    font-size: clamp(54px, 19vw, 76px);
     line-height: .8;
   }
 
+  /*
+   * Keep the three-phone composition, but fit the entire rotated silhouette
+   * inside the real content width. Previously phone 01 was effectively at 2%,
+   * so its -9deg rotation pushed the frame outside the clipped project.
+   */
   .project--mobile .phones-cluster {
-    min-height: 360px;
+    position: relative;
+    width: 100% !important;
+    max-width: 390px;
+    min-height: 350px;
+    margin-inline: auto;
+    justify-self: stretch;
+    overflow: visible;
   }
 
-  .project--mobile .phones-cluster .phone--1 { left: 2%; }
-  .project--mobile .phones-cluster .phone--2 { left: 32%; }
-  .project--mobile .phones-cluster .phone--3 { left: 62%; }
+  .project--mobile .phones-cluster .phone {
+    width: clamp(82px, 25vw, 94px);
+    height: clamp(186px, 55vw, 208px);
+    border-width: 5px;
+  }
+
+  .project--mobile .phones-cluster .phone--1 {
+    left: 7% !important;
+    top: 86px;
+  }
+
+  .project--mobile .phones-cluster .phone--2 {
+    left: 36% !important;
+    top: 42px;
+  }
+
+  .project--mobile .phones-cluster .phone--3 {
+    left: 66% !important;
+    top: 90px;
+  }
+
+  .project--mobile .project-copy--mobile {
+    width: 100%;
+    max-width: 100%;
+    margin-left: 0;
+  }
+
+  .project--mobile .project-copy--mobile h3,
+  .project--architecture .project-copy h3 {
+    max-width: 100%;
+    overflow-wrap: anywhere;
+  }
+
+  .project--architecture .project-copy,
+  .project--architecture .architecture-graphic {
+    width: 100%;
+    max-width: 100%;
+    min-width: 0;
+  }
+
+  .project--architecture .architecture-graphic {
+    justify-self: stretch;
+  }
+}
+
+@media (max-width: 420px) {
+  .project--mobile .phones-cluster {
+    max-width: 350px;
+    min-height: 330px;
+  }
+
+  .project--mobile .phones-cluster .phone {
+    width: clamp(78px, 24vw, 88px);
+    height: clamp(178px, 53vw, 196px);
+  }
+
+  .project--mobile .phones-cluster .phone--1 { left: 6% !important; }
+  .project--mobile .phones-cluster .phone--2 { left: 36% !important; }
+  .project--mobile .phones-cluster .phone--3 { left: 66% !important; }
 }
