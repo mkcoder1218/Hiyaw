@@ -10,6 +10,7 @@ import './about-animation.css';
 import './founder-showcase.css';
 import './contact-animation.css';
 import './selected-work-redesign.css';
+import './nav-scrollspy.css';
 import App from './App';
 import { initHeroMotion } from './heroMotion';
 import { initCollaborationMotion } from './collaborationMotion';
@@ -20,6 +21,7 @@ import { initAboutMotion } from './aboutMotion';
 import { initFounderShowcase } from './founderShowcase';
 import { initContactMotion } from './contactMotion';
 import { initSelectedWorkMotion } from './selectedWorkMotion';
+import { initNavScrollSpy } from './navScrollSpy';
 
 const rootElement = document.getElementById('root');
 if (!rootElement) {
@@ -42,3 +44,4 @@ initFounderShowcase();
 initAboutMotion();
 initContactMotion();
 initSelectedWorkMotion();
+initNavScrollSpy();
