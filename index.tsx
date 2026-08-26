@@ -24,6 +24,7 @@ import { initContactMotion } from './contactMotion';
 import { initSelectedWorkMotion } from './selectedWorkMotion';
 import { initNavScrollSpy } from './navScrollSpy';
 import { initMotionCatchUp } from './motionCatchUp';
+import { initHabeshaCollageSwap } from './habeshaCollageSwap';
 
 const rootElement = document.getElementById('root');
 if (!rootElement) {
@@ -42,6 +43,7 @@ root.render(
 // active GSAP timelines accelerate when the user scrolls quickly.
 initMotionCatchUp();
 
+initHabeshaCollageSwap();
 initHeroMotion();
 initCollaborationMotion();
 initMobileProjectMotion();
