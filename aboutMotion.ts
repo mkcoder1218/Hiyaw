@@ -53,13 +53,8 @@ const splitTextForSand = (element: HTMLElement) => {
   element.replaceChildren(fragment);
 };
 
-const runSandReveal = (
-  gsap: any,
-  element: HTMLElement | null,
-  timeline: any,
-  position?: string | number,
-) => {
-  if (!element) return;
+const prepareSandReveal = (gsap: any, element: HTMLElement | null) => {
+  if (!element || element.dataset.aboutSandPrepared === 'true') return;
 
   splitTextForSand(element);
   const chars = element.querySelectorAll<HTMLElement>('.about-sand-char');
@@ -74,6 +69,21 @@ const runSandReveal = (
     filter: compact ? 'none' : 'blur(6px)',
     transformOrigin: '50% 100%',
   });
+
+  element.dataset.aboutSandPrepared = 'true';
+};
+
+const runSandReveal = (
+  gsap: any,
+  element: HTMLElement | null,
+  timeline: any,
+  position?: string | number,
+) => {
+  if (!element) return;
+
+  prepareSandReveal(gsap, element);
+  const chars = element.querySelectorAll<HTMLElement>('.about-sand-char');
+  const compact = isCompactMotion();
 
   timeline.to(
     chars,
@@ -92,9 +102,51 @@ const runSandReveal = (
   );
 };
 
+const prepareHabesha = (gsap: any, section: HTMLElement) => {
+  if (section.dataset.aboutPrepared === 'true') return;
+  section.dataset.aboutPrepared = 'true';
+
+  const habesha = section.querySelector<HTMLElement>('.habesha-word:not(.habesha-word--second)');
+  const builders = section.querySelector<HTMLElement>('.habesha-word--second');
+  const captionEyebrow = section.querySelector<HTMLElement>('.habesha-caption .eyebrow');
+  const captionTitle = section.querySelector<HTMLElement>('.habesha-caption h2');
+  const captionCopy = section.querySelector<HTMLElement>('.habesha-caption p');
+  const images = Array.from(section.querySelectorAll<HTMLImageElement>('.collage-img'));
+
+  prepareSandReveal(gsap, habesha);
+  prepareSandReveal(gsap, builders);
+  prepareSandReveal(gsap, captionTitle);
+  gsap.set(captionEyebrow, { opacity: 0, y: isCompactMotion() ? 10 : 18 });
+  gsap.set(captionCopy, { opacity: 0, y: isCompactMotion() ? 10 : 18 });
+  gsap.set(images, { opacity: 0 });
+};
+
+const prepareFounders = (gsap: any, section: HTMLElement) => {
+  if (section.dataset.foundersPrepared === 'true') return;
+  section.dataset.foundersPrepared = 'true';
+
+  const compact = isCompactMotion();
+  const eyebrow = section.querySelector<HTMLElement>('.founders-title .eyebrow');
+  const title = section.querySelector<HTMLElement>('.founders-title h2');
+  const intro = section.querySelector<HTMLElement>('.founders-title p');
+  const founders = Array.from(section.querySelectorAll<HTMLElement>('.founder'));
+  const founderMetas = founders.map((founder) => founder.querySelector<HTMLElement>('.founder-meta'));
+  const quote = section.querySelector<HTMLElement>('blockquote');
+  const serious = section.querySelector<HTMLElement>('.serious-type');
+
+  prepareSandReveal(gsap, title);
+  prepareSandReveal(gsap, serious);
+  gsap.set(eyebrow, { opacity: 0, y: compact ? 10 : 16 });
+  gsap.set(intro, { opacity: 0, y: compact ? 12 : 20 });
+  gsap.set(founders, { opacity: 0 });
+  gsap.set(founderMetas.filter(Boolean), { opacity: 0, y: compact ? 10 : 18 });
+  gsap.set(quote, { opacity: 0, y: compact ? 12 : 18 });
+};
+
 const animateHabesha = (gsap: any, section: HTMLElement) => {
   if (section.dataset.aboutAnimated === 'true') return;
   section.dataset.aboutAnimated = 'true';
+  prepareHabesha(gsap, section);
 
   const compact = isCompactMotion();
   const habesha = section.querySelector<HTMLElement>('.habesha-word:not(.habesha-word--second)');
@@ -109,18 +161,16 @@ const animateHabesha = (gsap: any, section: HTMLElement) => {
   runSandReveal(gsap, habesha, timeline, 0);
   runSandReveal(gsap, builders, timeline, compact ? '-=0.48' : '-=0.72');
 
-  timeline.fromTo(
+  timeline.to(
     captionEyebrow,
-    { opacity: 0, y: compact ? 10 : 18 },
     { opacity: 1, y: 0, duration: compact ? 0.34 : 0.48 },
     compact ? '-=0.3' : '-=0.48',
   );
 
   runSandReveal(gsap, captionTitle, timeline, compact ? '-=0.2' : '-=0.28');
 
-  timeline.fromTo(
+  timeline.to(
     captionCopy,
-    { opacity: 0, y: compact ? 10 : 18 },
     { opacity: 1, y: 0, duration: compact ? 0.36 : 0.52 },
     compact ? '-=0.28' : '-=0.42',
   );
@@ -166,8 +216,6 @@ const animateHabesha = (gsap: any, section: HTMLElement) => {
     );
   });
 
-  // Desktop keeps the slow editorial float. Mobile stops after the entrance so
-  // this section cannot keep consuming frames after the user scrolls away.
   if (!compact) {
     timeline.call(() => {
       images.forEach((image, index) => {
@@ -188,6 +236,7 @@ const animateHabesha = (gsap: any, section: HTMLElement) => {
 const animateFounders = (gsap: any, section: HTMLElement) => {
   if (section.dataset.foundersAnimated === 'true') return;
   section.dataset.foundersAnimated = 'true';
+  prepareFounders(gsap, section);
 
   const compact = isCompactMotion();
   const eyebrow = section.querySelector<HTMLElement>('.founders-title .eyebrow');
@@ -201,18 +250,9 @@ const animateFounders = (gsap: any, section: HTMLElement) => {
 
   const timeline = gsap.timeline({ defaults: { ease: 'power3.out' } });
 
-  timeline.fromTo(
-    eyebrow,
-    { opacity: 0, y: compact ? 10 : 16 },
-    { opacity: 1, y: 0, duration: compact ? 0.32 : 0.46 },
-  );
+  timeline.to(eyebrow, { opacity: 1, y: 0, duration: compact ? 0.32 : 0.46 });
   runSandReveal(gsap, title, timeline, compact ? '-=0.12' : '-=0.18');
-  timeline.fromTo(
-    intro,
-    { opacity: 0, y: compact ? 12 : 20 },
-    { opacity: 1, y: 0, duration: compact ? 0.36 : 0.52 },
-    compact ? '-=0.28' : '-=0.42',
-  );
+  timeline.to(intro, { opacity: 1, y: 0, duration: compact ? 0.36 : 0.52 }, compact ? '-=0.28' : '-=0.42');
 
   founders.forEach((founder, index) => {
     const image = founderImages[index];
@@ -260,18 +300,12 @@ const animateFounders = (gsap: any, section: HTMLElement) => {
     }
 
     if (meta) {
-      timeline.fromTo(
-        meta,
-        { opacity: 0, y: compact ? 10 : 18 },
-        { opacity: 1, y: 0, duration: compact ? 0.3 : 0.42 },
-        compact ? '-=0.3' : '-=0.44',
-      );
+      timeline.to(meta, { opacity: 1, y: 0, duration: compact ? 0.3 : 0.42 }, compact ? '-=0.3' : '-=0.44');
     }
   });
 
-  timeline.fromTo(
+  timeline.to(
     quote,
-    { opacity: 0, x: compact ? 0 : -28, y: compact ? 12 : 18 },
     { opacity: 1, x: 0, y: 0, duration: compact ? 0.4 : 0.62 },
     compact ? '-=0.14' : '-=0.26',
   );
@@ -317,6 +351,11 @@ const waitForAbout = (attempt = 0) => {
   const founders = about.querySelector<HTMLElement>('.founders');
 
   if (!collage || !founders) return;
+
+  // Build every hidden start pose now, not when the observer fires. This removes
+  // the visible-final-state -> jump-back -> animate artifact on slow scrolling.
+  prepareHabesha(gsap, collage);
+  prepareFounders(gsap, founders);
 
   const observer = new IntersectionObserver(
     (entries) => {
