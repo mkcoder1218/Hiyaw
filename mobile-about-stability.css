@@ -1,0 +1,242 @@
+/* Final mobile About/Founders stability layer.
+   Imported after the legacy editorial styles so mobile uses one safe layout
+   instead of stacking several competing breakpoint rules. */
+
+@media (max-width: 760px) {
+  .about {
+    overflow: clip !important;
+  }
+
+  /* HABESHA BUILDERS — keep the collage editorial, but reserve a dedicated
+     caption zone so text never sits underneath the photos. */
+  .about > .habesha-collage {
+    position: relative !important;
+    display: block !important;
+    height: 850px !important;
+    min-height: 850px !important;
+    padding: 0 !important;
+    overflow: hidden !important;
+  }
+
+  .habesha-word {
+    left: 0 !important;
+    top: 18px !important;
+    max-width: 100% !important;
+    font-size: clamp(56px, 17vw, 76px) !important;
+    line-height: .8 !important;
+  }
+
+  .habesha-word--second {
+    left: 9% !important;
+    top: 78px !important;
+    max-width: 91% !important;
+    font-size: clamp(58px, 17.5vw, 82px) !important;
+    line-height: .8 !important;
+  }
+
+  .collage-img {
+    bottom: auto !important;
+    max-width: none !important;
+    will-change: auto !important;
+    contain: paint;
+  }
+
+  .collage-img--1 {
+    width: 64% !important;
+    height: 200px !important;
+    left: 25% !important;
+    right: auto !important;
+    top: 176px !important;
+  }
+
+  .collage-img--2 {
+    width: 48% !important;
+    height: 155px !important;
+    left: auto !important;
+    right: 0 !important;
+    top: 332px !important;
+  }
+
+  .collage-img--3 {
+    width: 42% !important;
+    height: 132px !important;
+    left: 7% !important;
+    right: auto !important;
+    top: 438px !important;
+  }
+
+  .habesha-caption {
+    position: absolute !important;
+    left: 0 !important;
+    right: auto !important;
+    top: auto !important;
+    bottom: 28px !important;
+    width: min(100%, 310px) !important;
+    max-width: 310px !important;
+    z-index: 12 !important;
+  }
+
+  .habesha-caption .eyebrow {
+    margin-bottom: 12px !important;
+  }
+
+  .habesha-caption h2 {
+    margin-bottom: 14px !important;
+    font-size: clamp(40px, 12vw, 50px) !important;
+    line-height: .9 !important;
+  }
+
+  .habesha-caption p {
+    margin: 0 !important;
+    max-width: 280px !important;
+    font-size: 13px !important;
+    line-height: 1.5 !important;
+  }
+
+  /* FOUNDERS — one clean mobile column. The desktop crop remains, but no card
+     is allowed to hang outside the viewport. */
+  .about > .founders {
+    display: grid !important;
+    grid-template-columns: minmax(0, 1fr) !important;
+    grid-template-rows: auto !important;
+    row-gap: 30px !important;
+    min-height: 0 !important;
+    padding: 54px 0 78px !important;
+    overflow: hidden !important;
+  }
+
+  .founders-title,
+  .founder--biruk,
+  .founder--mikeyas,
+  .founders blockquote,
+  .serious-type {
+    grid-column: 1 !important;
+    grid-row: auto !important;
+  }
+
+  .founders-title {
+    width: 100% !important;
+    max-width: 100% !important;
+    margin: 0 !important;
+  }
+
+  .founders-title h2 {
+    max-width: 100% !important;
+    margin-bottom: 18px !important;
+    font-size: clamp(54px, 16vw, 72px) !important;
+    line-height: .82 !important;
+  }
+
+  .founders-title p {
+    max-width: 310px !important;
+  }
+
+  .founder,
+  .founder--biruk,
+  .founder--mikeyas {
+    position: relative !important;
+    inset: auto !important;
+    width: 100% !important;
+    max-width: 420px !important;
+    height: auto !important;
+    margin: 0 !important;
+    justify-self: start !important;
+    transform-origin: center !important;
+    will-change: auto !important;
+  }
+
+  .founder img,
+  .founder-placeholder {
+    display: block !important;
+    width: 100% !important;
+    height: auto !important;
+    aspect-ratio: 4 / 5 !important;
+    max-height: 420px !important;
+    object-fit: cover !important;
+    will-change: auto !important;
+    contain: paint;
+    box-shadow: 0 14px 30px rgba(27, 43, 36, .09) !important;
+  }
+
+  .founder--biruk img {
+    object-position: 50% 35% !important;
+  }
+
+  .founder--mikeyas img {
+    object-position: 50% 25% !important;
+  }
+
+  .founder-meta {
+    width: 100% !important;
+    margin: -6px 0 0 !important;
+    padding: 16px 0 12px !important;
+    background: #f0ede5 !important;
+    backdrop-filter: none !important;
+  }
+
+  .founder-face-lens {
+    display: none !important;
+  }
+
+  .founders blockquote {
+    position: relative !important;
+    inset: auto !important;
+    width: 100% !important;
+    max-width: 310px !important;
+    margin: 8px 0 0 !important;
+    font-size: 19px !important;
+  }
+
+  .serious-type {
+    position: relative !important;
+    inset: auto !important;
+    max-width: 100% !important;
+    margin: 0 !important;
+    text-align: left !important;
+    font-size: clamp(38px, 12vw, 54px) !important;
+  }
+
+  /* Avoid pinning dozens of text/image layers to GPU memory on small phones. */
+  .about-sand-char,
+  .collage-img,
+  .founder,
+  .founder img,
+  .founder-placeholder {
+    will-change: auto !important;
+  }
+}
+
+@media (max-width: 420px) {
+  .about > .habesha-collage {
+    height: 820px !important;
+    min-height: 820px !important;
+  }
+
+  .habesha-word {
+    font-size: clamp(52px, 16.5vw, 68px) !important;
+  }
+
+  .habesha-word--second {
+    top: 72px !important;
+    font-size: clamp(54px, 17vw, 72px) !important;
+  }
+
+  .collage-img--1 {
+    top: 164px !important;
+    height: 190px !important;
+  }
+
+  .collage-img--2 {
+    top: 315px !important;
+    height: 148px !important;
+  }
+
+  .collage-img--3 {
+    top: 420px !important;
+    height: 125px !important;
+  }
+
+  .habesha-caption h2 {
+    font-size: clamp(38px, 11.7vw, 46px) !important;
+  }
+}
