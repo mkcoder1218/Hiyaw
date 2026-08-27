@@ -94,9 +94,9 @@ const enhanceContact = (section: HTMLElement) => {
 
   const call = document.createElement('a');
   call.className = 'button button--quiet contact-call';
-  call.href = 'tel:+251963459693';
-  call.setAttribute('aria-label', 'Call Hyaw at +251 963 459 693');
-  call.innerHTML = '<span>Call +251 963 459 693</span><span aria-hidden="true">↗</span>';
+  call.href = 'tel:+251962459693';
+  call.setAttribute('aria-label', 'Call Hyaw at +251 962 459 693');
+  call.innerHTML = '<span>Call +251 962 459 693</span><span aria-hidden="true">↗</span>';
   actions.appendChild(call);
 
   if (!actions.parentElement) copy.appendChild(actions);
@@ -105,7 +105,7 @@ const enhanceContact = (section: HTMLElement) => {
   direct.className = 'contact-direct';
   direct.innerHTML = `
     <div><small>Email</small><a href="mailto:hello@hyaw.tech">hello@hyaw.tech</a></div>
-    <div><small>Call</small><a href="tel:+251963459693">+251 963 459 693</a></div>
+    <div><small>Call</small><a href="tel:+251962459693">+251 962 459 693</a></div>
     <div><small>Base</small><strong>Addis Ababa, Ethiopia</strong></div>
     <div><small>Best fit</small><strong>Products · Systems · Platforms</strong></div>
   `;
@@ -129,9 +129,9 @@ const enhanceContact = (section: HTMLElement) => {
   particles.append(core, ...orbitLabels, caption);
 };
 
-const animateContact = (gsap: any, section: HTMLElement) => {
-  if (section.dataset.contactAnimated === 'true') return;
-  section.dataset.contactAnimated = 'true';
+const prepareContact = (gsap: any, section: HTMLElement) => {
+  if (section.dataset.contactPrepared === 'true') return;
+  section.dataset.contactPrepared = 'true';
 
   const eyebrow = section.querySelector<HTMLElement>('.eyebrow');
   const title = section.querySelector<HTMLElement>('h2');
@@ -151,6 +151,55 @@ const animateContact = (gsap: any, section: HTMLElement) => {
   splitContactTitle(title);
   const chars = Array.from(title.querySelectorAll<HTMLElement>('.contact-sand-char'));
 
+  gsap.set(eyebrow, { opacity: 0, y: 16 });
+  gsap.set(chars, {
+    opacity: 0,
+    x: () => gsap.utils.random(-28, 28),
+    y: () => gsap.utils.random(28, 96),
+    rotation: () => gsap.utils.random(-11, 11),
+    scale: () => gsap.utils.random(.74, 1.1),
+    filter: 'blur(7px)',
+  });
+  gsap.set(copyText, { opacity: 0, y: 18 });
+  gsap.set(status, { opacity: 0, x: -14 });
+  gsap.set(options, { opacity: 0, y: 18, scale: .94 });
+  gsap.set(actionButtons, { opacity: 0, y: 24, scale: .94 });
+  gsap.set(directItems, { opacity: 0, y: 16 });
+  gsap.set(particleWrap, { opacity: 0, scale: .76, rotation: -7 });
+  gsap.set(core, { opacity: 0, scale: .55, filter: 'blur(8px)' });
+  gsap.set(orbitLabels, { opacity: 0, scale: .72, y: 12 });
+  gsap.set(signalCaption, { opacity: 0, y: 12 });
+  gsap.set(particles, {
+    opacity: 0,
+    x: 0,
+    y: 0,
+    scale: 0,
+    rotation: () => gsap.utils.random(-60, 60),
+    filter: 'blur(5px)',
+  });
+};
+
+const animateContact = (gsap: any, section: HTMLElement) => {
+  if (section.dataset.contactAnimated === 'true') return;
+  section.dataset.contactAnimated = 'true';
+  prepareContact(gsap, section);
+
+  const eyebrow = section.querySelector<HTMLElement>('.eyebrow');
+  const title = section.querySelector<HTMLElement>('h2');
+  const copyText = section.querySelector<HTMLElement>('.contact-copy > p');
+  const status = section.querySelector<HTMLElement>('.contact-status');
+  const options = Array.from(section.querySelectorAll<HTMLElement>('.contact-option'));
+  const actionButtons = Array.from(section.querySelectorAll<HTMLElement>('.contact-actions a'));
+  const directItems = Array.from(section.querySelectorAll<HTMLElement>('.contact-direct > div'));
+  const particleWrap = section.querySelector<HTMLElement>('.contact-particles');
+  const particles = Array.from(section.querySelectorAll<HTMLElement>('.contact-particles > span:not(.contact-orbit-label)'));
+  const core = section.querySelector<HTMLElement>('.contact-signal-core');
+  const orbitLabels = Array.from(section.querySelectorAll<HTMLElement>('.contact-orbit-label'));
+  const signalCaption = section.querySelector<HTMLElement>('.contact-signal-caption');
+
+  if (!title || !particleWrap) return;
+
+  const chars = Array.from(title.querySelectorAll<HTMLElement>('.contact-sand-char'));
   const positions = particles.map((_, index) => {
     const angle = (-Math.PI / 2) + ((Math.PI * 2) / Math.max(particles.length, 1)) * index;
     const ring = index % 3;
@@ -162,28 +211,10 @@ const animateContact = (gsap: any, section: HTMLElement) => {
     };
   });
 
-  gsap.set(chars, {
-    opacity: 0,
-    x: () => gsap.utils.random(-28, 28),
-    y: () => gsap.utils.random(28, 96),
-    rotation: () => gsap.utils.random(-11, 11),
-    scale: () => gsap.utils.random(.74, 1.1),
-    filter: 'blur(7px)',
-  });
-
-  gsap.set(particles, {
-    opacity: 0,
-    x: 0,
-    y: 0,
-    scale: 0,
-    rotation: () => gsap.utils.random(-60, 60),
-    filter: 'blur(5px)',
-  });
-
   const timeline = gsap.timeline({ defaults: { ease: 'power3.out' } });
 
   timeline
-    .fromTo(eyebrow, { opacity: 0, y: 16 }, { opacity: 1, y: 0, duration: .44 }, 0)
+    .to(eyebrow, { opacity: 1, y: 0, duration: .44 }, 0)
     .to(chars, {
       opacity: 1,
       x: 0,
@@ -195,13 +226,13 @@ const animateContact = (gsap: any, section: HTMLElement) => {
       ease: 'expo.out',
       stagger: { each: .012, from: 'random' },
     }, .1)
-    .fromTo(copyText, { opacity: 0, y: 18 }, { opacity: 1, y: 0, duration: .48 }, '-=.46')
-    .fromTo(status, { opacity: 0, x: -14 }, { opacity: 1, x: 0, duration: .42 }, '-=.3')
-    .fromTo(options, { opacity: 0, y: 18, scale: .94 }, { opacity: 1, y: 0, scale: 1, duration: .42, stagger: .07, ease: 'back.out(1.35)' }, '-=.24')
-    .fromTo(actionButtons, { opacity: 0, y: 24, scale: .94 }, { opacity: 1, y: 0, scale: 1, duration: .52, stagger: .09, ease: 'expo.out' }, '-=.25')
-    .fromTo(directItems, { opacity: 0, y: 16 }, { opacity: 1, y: 0, duration: .4, stagger: .08 }, '-=.22')
-    .fromTo(particleWrap, { opacity: 0, scale: .76, rotation: -7 }, { opacity: 1, scale: 1, rotation: 0, duration: .58, ease: 'expo.out' }, '-=.52')
-    .fromTo(core, { opacity: 0, scale: .55, filter: 'blur(8px)' }, { opacity: 1, scale: 1, filter: 'blur(0px)', duration: .65, ease: 'back.out(1.4)' }, '-=.36')
+    .to(copyText, { opacity: 1, y: 0, duration: .48 }, '-=.46')
+    .to(status, { opacity: 1, x: 0, duration: .42 }, '-=.3')
+    .to(options, { opacity: 1, y: 0, scale: 1, duration: .42, stagger: .07, ease: 'back.out(1.35)' }, '-=.24')
+    .to(actionButtons, { opacity: 1, y: 0, scale: 1, duration: .52, stagger: .09, ease: 'expo.out' }, '-=.25')
+    .to(directItems, { opacity: 1, y: 0, duration: .4, stagger: .08 }, '-=.22')
+    .to(particleWrap, { opacity: 1, scale: 1, rotation: 0, duration: .58, ease: 'expo.out' }, '-=.52')
+    .to(core, { opacity: 1, scale: 1, filter: 'blur(0px)', duration: .65, ease: 'back.out(1.4)' }, '-=.36')
     .to(particles, {
       opacity: 1,
       x: (index: number) => positions[index].x,
@@ -213,8 +244,8 @@ const animateContact = (gsap: any, section: HTMLElement) => {
       ease: 'expo.out',
       stagger: .028,
     }, '-=.28')
-    .fromTo(orbitLabels, { opacity: 0, scale: .72, y: 12 }, { opacity: 1, scale: 1, y: 0, duration: .42, stagger: .08, ease: 'back.out(1.3)' }, '-=.42')
-    .fromTo(signalCaption, { opacity: 0, y: 12 }, { opacity: 1, y: 0, duration: .4 }, '-=.26');
+    .to(orbitLabels, { opacity: 1, scale: 1, y: 0, duration: .42, stagger: .08, ease: 'back.out(1.3)' }, '-=.42')
+    .to(signalCaption, { opacity: 1, y: 0, duration: .4 }, '-=.26');
 
   timeline.call(() => {
     gsap.to(particleWrap, {
@@ -287,6 +318,10 @@ const waitForContact = (attempt = 0) => {
   });
 
   if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+
+  // Prepare before the section is observed so nothing is shown in its completed
+  // state and then rewound after the user scrolls farther into the viewport.
+  prepareContact(gsap, section);
 
   const observer = new IntersectionObserver(
     (entries) => {
