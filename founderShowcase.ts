@@ -27,6 +27,16 @@ const enhanceFounder = (profile: (typeof founderProfiles)[number]) => {
   // Keep each founder represented by one primary portrait only.
   founder.querySelectorAll('.founder-face-lens').forEach((lens) => lens.remove());
 
+  // Founder portraits are multi-megabyte source files. Keep them off the
+  // critical path and let decoding happen away from the main rendering work.
+  const portrait = founder.querySelector<HTMLImageElement>('img');
+  if (portrait) {
+    portrait.loading = 'lazy';
+    portrait.decoding = 'async';
+    portrait.setAttribute('fetchpriority', 'low');
+    portrait.setAttribute('draggable', 'false');
+  }
+
   // Keep the visible leadership titles authoritative even though the base
   // markup was created before the current company roles were finalized.
   const role = meta.querySelector<HTMLElement>('small');
