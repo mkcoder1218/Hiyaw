@@ -1,17 +1,17 @@
 const HABESHA_COLLAGE_IMAGES = [
   {
     selector: '.collage-img--1',
-    src: 'https://images.pexels.com/photos/30690402/pexels-photo-30690402.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=1&hyaw=20260826-3',
+    src: 'https://images.pexels.com/photos/30690402/pexels-photo-30690402.jpeg?auto=compress&cs=tinysrgb&w=900&h=650&dpr=1&hyaw=20260827-1',
     alt: 'African women collaborating with laptops in a modern office',
   },
   {
     selector: '.collage-img--2',
-    src: 'https://images.pexels.com/photos/7993903/pexels-photo-7993903.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=1&hyaw=20260826-3',
+    src: 'https://images.pexels.com/photos/7993903/pexels-photo-7993903.jpeg?auto=compress&cs=tinysrgb&w=900&h=650&dpr=1&hyaw=20260827-1',
     alt: 'African professionals discussing a project together in the office',
   },
   {
     selector: '.collage-img--3',
-    src: 'https://images.pexels.com/photos/3894378/pexels-photo-3894378.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=1&hyaw=20260826-3',
+    src: 'https://images.pexels.com/photos/3894378/pexels-photo-3894378.jpeg?auto=compress&cs=tinysrgb&w=900&h=650&dpr=1&hyaw=20260827-1',
     alt: 'African team members working together around a laptop',
   },
 ] as const;
@@ -41,15 +41,21 @@ const applyHabeshaCollageSwap = () => {
     if (image.hasAttribute('srcset')) image.removeAttribute('srcset');
     if (image.hasAttribute('sizes')) image.removeAttribute('sizes');
     if (image.alt !== alt) image.alt = alt;
-    if (image.loading !== 'eager') image.loading = 'eager';
-    if (image.decoding !== 'async') image.decoding = 'async';
-    if (image.getAttribute('fetchpriority') !== 'high') image.setAttribute('fetchpriority', 'high');
-    if (image.dataset.hyawCollageSource !== 'habesha-v3') {
-      image.dataset.hyawCollageSource = 'habesha-v3';
-    }
+
+    // The collage is far below the fold. Eager/high-priority loading was
+    // competing with the hero and animation code on mobile.
+    image.loading = 'lazy';
+    image.decoding = 'async';
+    image.setAttribute('fetchpriority', 'low');
+    image.dataset.hyawCollageSource = 'habesha-v4';
   });
 
   return found === HABESHA_COLLAGE_IMAGES.length;
+};
+
+const stopObserver = () => {
+  observer?.disconnect();
+  observer = null;
 };
 
 export const initHabeshaCollageSwap = () => {
@@ -58,30 +64,33 @@ export const initHabeshaCollageSwap = () => {
 
   const root = document.getElementById('root') ?? document.documentElement;
 
-  // Keep this observer alive. App.tsx still owns the legacy JSX source values,
-  // and React can reconcile those attributes again after any state update.
-  // Watching src/srcset changes means the Habesha imagery is restored in the
-  // same mutation turn instead of allowing the old photos to come back.
+  // Only observe long enough for React's first mount. Keeping an attribute
+  // MutationObserver alive for the entire site caused work on every animated
+  // DOM change and was a major source of mobile jank.
   observer = new MutationObserver(() => {
-    applyHabeshaCollageSwap();
+    if (applyHabeshaCollageSwap()) stopObserver();
   });
 
   observer.observe(root, {
     childList: true,
     subtree: true,
-    attributes: true,
-    attributeFilter: ['src', 'srcset', 'sizes'],
   });
 
-  applyHabeshaCollageSwap();
+  if (applyHabeshaCollageSwap()) {
+    stopObserver();
+    return;
+  }
 
-  // Concurrent React mounting can happen after this module initializes. Retry
-  // briefly for first mount; the persistent observer handles every rerender.
   let attempts = 0;
   const retry = () => {
-    if (applyHabeshaCollageSwap()) return;
+    if (applyHabeshaCollageSwap()) {
+      stopObserver();
+      return;
+    }
+
     attempts += 1;
     if (attempts < 120) requestAnimationFrame(retry);
+    else stopObserver();
   };
 
   requestAnimationFrame(retry);
