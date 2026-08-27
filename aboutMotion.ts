@@ -1,3 +1,5 @@
+const isCompactMotion = () => window.matchMedia('(max-width: 760px)').matches;
+
 const splitTextForSand = (element: HTMLElement) => {
   if (element.dataset.aboutSandSplit === 'true') return;
 
@@ -61,14 +63,15 @@ const runSandReveal = (
 
   splitTextForSand(element);
   const chars = element.querySelectorAll<HTMLElement>('.about-sand-char');
+  const compact = isCompactMotion();
 
   gsap.set(chars, {
     opacity: 0,
-    x: () => gsap.utils.random(-22, 22),
-    y: () => gsap.utils.random(26, 84),
-    rotation: () => gsap.utils.random(-9, 9),
-    scale: () => gsap.utils.random(0.78, 1.08),
-    filter: 'blur(6px)',
+    x: () => gsap.utils.random(compact ? -10 : -22, compact ? 10 : 22),
+    y: () => gsap.utils.random(compact ? 16 : 26, compact ? 44 : 84),
+    rotation: () => gsap.utils.random(compact ? -4 : -9, compact ? 4 : 9),
+    scale: () => gsap.utils.random(compact ? 0.9 : 0.78, compact ? 1.04 : 1.08),
+    filter: compact ? 'none' : 'blur(6px)',
     transformOrigin: '50% 100%',
   });
 
@@ -80,10 +83,10 @@ const runSandReveal = (
       y: 0,
       rotation: 0,
       scale: 1,
-      filter: 'blur(0px)',
-      duration: 1.05,
+      filter: 'none',
+      duration: compact ? 0.72 : 1.05,
       ease: 'expo.out',
-      stagger: { each: 0.012, from: 'random' },
+      stagger: { each: compact ? 0.008 : 0.012, from: 'random' },
     },
     position,
   );
@@ -93,6 +96,7 @@ const animateHabesha = (gsap: any, section: HTMLElement) => {
   if (section.dataset.aboutAnimated === 'true') return;
   section.dataset.aboutAnimated = 'true';
 
+  const compact = isCompactMotion();
   const habesha = section.querySelector<HTMLElement>('.habesha-word:not(.habesha-word--second)');
   const builders = section.querySelector<HTMLElement>('.habesha-word--second');
   const captionEyebrow = section.querySelector<HTMLElement>('.habesha-caption .eyebrow');
@@ -103,26 +107,36 @@ const animateHabesha = (gsap: any, section: HTMLElement) => {
   const timeline = gsap.timeline({ defaults: { ease: 'power3.out' } });
 
   runSandReveal(gsap, habesha, timeline, 0);
-  runSandReveal(gsap, builders, timeline, '-=0.72');
+  runSandReveal(gsap, builders, timeline, compact ? '-=0.48' : '-=0.72');
 
-  timeline
-    .fromTo(captionEyebrow, { opacity: 0, y: 18 }, { opacity: 1, y: 0, duration: 0.48 }, '-=0.48');
+  timeline.fromTo(
+    captionEyebrow,
+    { opacity: 0, y: compact ? 10 : 18 },
+    { opacity: 1, y: 0, duration: compact ? 0.34 : 0.48 },
+    compact ? '-=0.3' : '-=0.48',
+  );
 
-  runSandReveal(gsap, captionTitle, timeline, '-=0.28');
+  runSandReveal(gsap, captionTitle, timeline, compact ? '-=0.2' : '-=0.28');
 
   timeline.fromTo(
     captionCopy,
-    { opacity: 0, y: 18 },
-    { opacity: 1, y: 0, duration: 0.52 },
-    '-=0.42',
+    { opacity: 0, y: compact ? 10 : 18 },
+    { opacity: 1, y: 0, duration: compact ? 0.36 : 0.52 },
+    compact ? '-=0.28' : '-=0.42',
   );
 
-  const finalRotations = [-3, 2.5, 4];
-  const revealOrigins = [
-    { x: 90, y: 70, rotation: -9 },
-    { x: 110, y: -10, rotation: 9 },
-    { x: -70, y: 80, rotation: -7 },
-  ];
+  const finalRotations = compact ? [-2, 1.5, 2] : [-3, 2.5, 4];
+  const revealOrigins = compact
+    ? [
+        { x: 26, y: 30, rotation: -4 },
+        { x: 30, y: 12, rotation: 4 },
+        { x: -24, y: 28, rotation: -3 },
+      ]
+    : [
+        { x: 90, y: 70, rotation: -9 },
+        { x: 110, y: -10, rotation: 9 },
+        { x: -70, y: 80, rotation: -7 },
+      ];
 
   images.forEach((image, index) => {
     const origin = revealOrigins[index] ?? revealOrigins[0];
@@ -133,9 +147,9 @@ const animateHabesha = (gsap: any, section: HTMLElement) => {
         x: origin.x,
         y: origin.y,
         rotation: origin.rotation,
-        scale: 1.12,
-        clipPath: 'inset(48% 8% 48% 8%)',
-        filter: 'blur(10px) saturate(.7)',
+        scale: compact ? 1.035 : 1.12,
+        clipPath: compact ? 'inset(18% 4% 18% 4%)' : 'inset(48% 8% 48% 8%)',
+        filter: compact ? 'none' : 'blur(10px) saturate(.7)',
       },
       {
         opacity: 1,
@@ -144,33 +158,38 @@ const animateHabesha = (gsap: any, section: HTMLElement) => {
         rotation: finalRotations[index] ?? 0,
         scale: 1,
         clipPath: 'inset(0% 0% 0% 0%)',
-        filter: 'blur(0px) saturate(1)',
-        duration: 0.95,
+        filter: 'none',
+        duration: compact ? 0.62 : 0.95,
         ease: 'expo.out',
       },
-      index === 0 ? '-=0.45' : '-=0.64',
+      index === 0 ? (compact ? '-=0.28' : '-=0.45') : (compact ? '-=0.42' : '-=0.64'),
     );
   });
 
-  timeline.call(() => {
-    images.forEach((image, index) => {
-      gsap.to(image, {
-        y: index % 2 === 0 ? -8 : 8,
-        x: index === 1 ? 5 : -4,
-        rotation: (finalRotations[index] ?? 0) + (index % 2 === 0 ? 0.7 : -0.7),
-        duration: 4.6 + index * 0.5,
-        ease: 'sine.inOut',
-        yoyo: true,
-        repeat: -1,
+  // Desktop keeps the slow editorial float. Mobile stops after the entrance so
+  // this section cannot keep consuming frames after the user scrolls away.
+  if (!compact) {
+    timeline.call(() => {
+      images.forEach((image, index) => {
+        gsap.to(image, {
+          y: index % 2 === 0 ? -8 : 8,
+          x: index === 1 ? 5 : -4,
+          rotation: (finalRotations[index] ?? 0) + (index % 2 === 0 ? 0.7 : -0.7),
+          duration: 4.6 + index * 0.5,
+          ease: 'sine.inOut',
+          yoyo: true,
+          repeat: -1,
+        });
       });
     });
-  });
+  }
 };
 
 const animateFounders = (gsap: any, section: HTMLElement) => {
   if (section.dataset.foundersAnimated === 'true') return;
   section.dataset.foundersAnimated = 'true';
 
+  const compact = isCompactMotion();
   const eyebrow = section.querySelector<HTMLElement>('.founders-title .eyebrow');
   const title = section.querySelector<HTMLElement>('.founders-title h2');
   const intro = section.querySelector<HTMLElement>('.founders-title p');
@@ -182,23 +201,32 @@ const animateFounders = (gsap: any, section: HTMLElement) => {
 
   const timeline = gsap.timeline({ defaults: { ease: 'power3.out' } });
 
-  timeline.fromTo(eyebrow, { opacity: 0, y: 16 }, { opacity: 1, y: 0, duration: 0.46 });
-  runSandReveal(gsap, title, timeline, '-=0.18');
-  timeline.fromTo(intro, { opacity: 0, y: 20 }, { opacity: 1, y: 0, duration: 0.52 }, '-=0.42');
+  timeline.fromTo(
+    eyebrow,
+    { opacity: 0, y: compact ? 10 : 16 },
+    { opacity: 1, y: 0, duration: compact ? 0.32 : 0.46 },
+  );
+  runSandReveal(gsap, title, timeline, compact ? '-=0.12' : '-=0.18');
+  timeline.fromTo(
+    intro,
+    { opacity: 0, y: compact ? 12 : 20 },
+    { opacity: 1, y: 0, duration: compact ? 0.36 : 0.52 },
+    compact ? '-=0.28' : '-=0.42',
+  );
 
   founders.forEach((founder, index) => {
     const image = founderImages[index];
     const meta = founderMetas[index];
-    const finalRotation = index === 0 ? -2 : 1.4;
+    const finalRotation = compact ? 0 : index === 0 ? -2 : 1.4;
 
     timeline.fromTo(
       founder,
       {
         opacity: 0,
-        x: index === 0 ? -90 : 95,
-        y: 75,
-        rotation: index === 0 ? -8 : 8,
-        scale: 0.9,
+        x: compact ? (index === 0 ? -22 : 22) : index === 0 ? -90 : 95,
+        y: compact ? 34 : 75,
+        rotation: compact ? (index === 0 ? -2 : 2) : index === 0 ? -8 : 8,
+        scale: compact ? 0.97 : 0.9,
       },
       {
         opacity: 1,
@@ -206,62 +234,64 @@ const animateFounders = (gsap: any, section: HTMLElement) => {
         y: 0,
         rotation: finalRotation,
         scale: 1,
-        duration: 0.9,
+        duration: compact ? 0.62 : 0.9,
         ease: 'expo.out',
       },
-      index === 0 ? '-=0.18' : '-=0.54',
+      index === 0 ? (compact ? '-=0.08' : '-=0.18') : (compact ? '-=0.28' : '-=0.54'),
     );
 
     if (image) {
       timeline.fromTo(
         image,
         {
-          clipPath: 'inset(52% 0% 48% 0%)',
-          filter: 'blur(9px) contrast(.84)',
-          scale: 1.09,
+          clipPath: compact ? 'inset(16% 0% 16% 0%)' : 'inset(52% 0% 48% 0%)',
+          filter: compact ? 'none' : 'blur(9px) contrast(.84)',
+          scale: compact ? 1.025 : 1.09,
         },
         {
           clipPath: 'inset(0% 0% 0% 0%)',
-          filter: 'blur(0px) contrast(1)',
+          filter: 'none',
           scale: 1,
-          duration: 0.78,
+          duration: compact ? 0.52 : 0.78,
           ease: 'expo.out',
         },
-        '-=0.72',
+        compact ? '-=0.48' : '-=0.72',
       );
     }
 
     if (meta) {
       timeline.fromTo(
         meta,
-        { opacity: 0, y: 18 },
-        { opacity: 1, y: 0, duration: 0.42 },
-        '-=0.44',
+        { opacity: 0, y: compact ? 10 : 18 },
+        { opacity: 1, y: 0, duration: compact ? 0.3 : 0.42 },
+        compact ? '-=0.3' : '-=0.44',
       );
     }
   });
 
   timeline.fromTo(
     quote,
-    { opacity: 0, x: -28, y: 18 },
-    { opacity: 1, x: 0, y: 0, duration: 0.62 },
-    '-=0.26',
+    { opacity: 0, x: compact ? 0 : -28, y: compact ? 12 : 18 },
+    { opacity: 1, x: 0, y: 0, duration: compact ? 0.4 : 0.62 },
+    compact ? '-=0.14' : '-=0.26',
   );
 
-  runSandReveal(gsap, serious, timeline, '-=0.32');
+  runSandReveal(gsap, serious, timeline, compact ? '-=0.2' : '-=0.32');
 
-  timeline.call(() => {
-    founders.forEach((founder, index) => {
-      gsap.to(founder, {
-        y: index === 0 ? -9 : 8,
-        rotation: (index === 0 ? -2 : 1.4) + (index === 0 ? .6 : -.5),
-        duration: index === 0 ? 4.8 : 5.3,
-        ease: 'sine.inOut',
-        repeat: -1,
-        yoyo: true,
+  if (!compact) {
+    timeline.call(() => {
+      founders.forEach((founder, index) => {
+        gsap.to(founder, {
+          y: index === 0 ? -9 : 8,
+          rotation: (index === 0 ? -2 : 1.4) + (index === 0 ? 0.6 : -0.5),
+          duration: index === 0 ? 4.8 : 5.3,
+          ease: 'sine.inOut',
+          repeat: -1,
+          yoyo: true,
+        });
       });
     });
-  });
+  }
 };
 
 const waitForAbout = (attempt = 0) => {
@@ -299,7 +329,7 @@ const waitForAbout = (attempt = 0) => {
         observer.unobserve(entry.target);
       });
     },
-    { threshold: 0.2 },
+    { threshold: 0.22 },
   );
 
   observer.observe(collage);
