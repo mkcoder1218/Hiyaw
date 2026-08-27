@@ -21,10 +21,80 @@ const revealDataElements = (root: Element) => {
   });
 };
 
+const prepareArchitecture = (section: HTMLElement, gsap: GsapInstance) => {
+  if (section.dataset.gsapArchitecturePrepared === 'true') return;
+  section.dataset.gsapArchitecturePrepared = 'true';
+  revealDataElements(section);
+
+  const copy = section.querySelector<HTMLElement>('.project-copy');
+  const index = copy?.querySelector<HTMLElement>('.project-index');
+  const title = copy?.querySelector<HTMLElement>('h3');
+  const description = copy?.querySelector<HTMLElement>('p');
+  const meta = copy?.querySelector<HTMLElement>('.project-meta');
+  const link = copy?.querySelector<HTMLElement>('a');
+  const graphic = section.querySelector<HTMLElement>('.architecture-graphic');
+  const planes = Array.from(section.querySelectorAll<HTMLElement>('.arch-plane'));
+  const labels = Array.from(section.querySelectorAll<HTMLElement>('.arch-label'));
+
+  gsap.set(index, { opacity: 0, y: 12 });
+  gsap.set(title, { opacity: 0, y: 54, clipPath: 'inset(0 0 100% 0)' });
+  gsap.set(description, { opacity: 0, y: 24 });
+  gsap.set(meta, { opacity: 0, y: 18 });
+  gsap.set(link, { opacity: 0, x: -18 });
+  gsap.set(graphic, { opacity: 0, scale: 0.97 });
+
+  planes.forEach((plane, indexValue) => {
+    const direction = indexValue % 2 === 0 ? -1 : 1;
+    gsap.set(plane, {
+      opacity: 0,
+      x: direction * 54,
+      y: 36,
+      scaleX: 0.72,
+      scaleY: 0.88,
+      rotation: direction * 1.6,
+    });
+  });
+
+  labels.forEach((label, indexValue) => {
+    const direction = indexValue % 2 === 0 ? -1 : 1;
+    gsap.set(label, { opacity: 0, x: direction * 20, y: 8 });
+  });
+};
+
+const prepareServices = (section: HTMLElement, gsap: GsapInstance) => {
+  if (section.dataset.gsapServicesPrepared === 'true') return;
+  section.dataset.gsapServicesPrepared = 'true';
+  revealDataElements(section);
+
+  const intro = section.querySelector<HTMLElement>('.services-intro');
+  const eyebrow = intro?.querySelector<HTMLElement>('.eyebrow');
+  const title = intro?.querySelector<HTMLElement>('h2');
+  const description = intro?.querySelector<HTMLElement>('p');
+  const rows = Array.from(section.querySelectorAll<HTMLElement>('.service-row'));
+  const orbit = section.querySelector<HTMLElement>('.services-orbit');
+  const orbitCards = Array.from(section.querySelectorAll<HTMLElement>('.orbit-card'));
+
+  gsap.set(eyebrow, { opacity: 0, y: 12 });
+  gsap.set(title, { opacity: 0, y: 56, clipPath: 'inset(0 0 100% 0)' });
+  gsap.set(description, { opacity: 0, y: 26 });
+  gsap.set(rows, { opacity: 0, y: 34 });
+  gsap.set(orbit, { '--orbit-line-scale': 0 } as any);
+  gsap.set(orbitCards, { opacity: 0, scale: 0.72, y: 24 });
+
+  rows.forEach((row) => {
+    const number = row.querySelector<HTMLElement>('span');
+    const heading = row.querySelector<HTMLElement>('strong');
+    const text = row.querySelector<HTMLElement>('p');
+    gsap.set(number, { opacity: 0, x: -12 });
+    gsap.set(heading, { opacity: 0, x: -18 });
+    gsap.set(text, { opacity: 0, x: 16 });
+  });
+};
+
 const animateArchitecture = (section: HTMLElement, gsap: GsapInstance) => {
   if (section.dataset.gsapArchitecture === 'true') return;
   section.dataset.gsapArchitecture = 'true';
-  revealDataElements(section);
+  prepareArchitecture(section, gsap);
 
   const copy = section.querySelector<HTMLElement>('.project-copy');
   const index = copy?.querySelector<HTMLElement>('.project-index');
@@ -41,27 +111,18 @@ const animateArchitecture = (section: HTMLElement, gsap: GsapInstance) => {
   const timeline = gsap.timeline({ defaults: { ease: 'power3.out' } });
 
   timeline
-    .fromTo(index, { opacity: 0, y: 12 }, { opacity: 1, y: 0, duration: 0.42 })
-    .fromTo(title, { opacity: 0, y: 54, clipPath: 'inset(0 0 100% 0)' }, { opacity: 1, y: 0, clipPath: 'inset(0 0 0% 0)', duration: 0.82, ease: 'expo.out' }, '-=0.16')
-    .fromTo(description, { opacity: 0, y: 24 }, { opacity: 1, y: 0, duration: 0.56 }, '-=0.42')
-    .fromTo(meta, { opacity: 0, y: 18 }, { opacity: 1, y: 0, duration: 0.45 }, '-=0.32')
-    .fromTo(link, { opacity: 0, x: -18 }, { opacity: 1, x: 0, duration: 0.45 }, '-=0.28')
-    .fromTo(graphic, { opacity: 0, scale: 0.97 }, { opacity: 1, scale: 1, duration: 0.35 }, '-=0.35');
+    .to(index, { opacity: 1, y: 0, duration: 0.42 })
+    .to(title, { opacity: 1, y: 0, clipPath: 'inset(0 0 0% 0)', duration: 0.82, ease: 'expo.out' }, '-=0.16')
+    .to(description, { opacity: 1, y: 0, duration: 0.56 }, '-=0.42')
+    .to(meta, { opacity: 1, y: 0, duration: 0.45 }, '-=0.32')
+    .to(link, { opacity: 1, x: 0, duration: 0.45 }, '-=0.28')
+    .to(graphic, { opacity: 1, scale: 1, duration: 0.35 }, '-=0.35');
 
   planes.forEach((plane, indexValue) => {
     const label = labels[indexValue];
-    const direction = indexValue % 2 === 0 ? -1 : 1;
 
-    timeline.fromTo(
+    timeline.to(
       plane,
-      {
-        opacity: 0,
-        x: direction * 54,
-        y: 36,
-        scaleX: 0.72,
-        scaleY: 0.88,
-        rotation: direction * 1.6,
-      },
       {
         opacity: 1,
         x: 0,
@@ -76,12 +137,7 @@ const animateArchitecture = (section: HTMLElement, gsap: GsapInstance) => {
     );
 
     if (label) {
-      timeline.fromTo(
-        label,
-        { opacity: 0, x: direction * 20, y: 8 },
-        { opacity: 1, x: 0, y: 0, duration: 0.34 },
-        '-=0.42',
-      );
+      timeline.to(label, { opacity: 1, x: 0, y: 0, duration: 0.34 }, '-=0.42');
     }
   });
 
@@ -101,7 +157,7 @@ const animateArchitecture = (section: HTMLElement, gsap: GsapInstance) => {
 const animateServices = (section: HTMLElement, gsap: GsapInstance) => {
   if (section.dataset.gsapServices === 'true') return;
   section.dataset.gsapServices = 'true';
-  revealDataElements(section);
+  prepareServices(section, gsap);
 
   const intro = section.querySelector<HTMLElement>('.services-intro');
   const eyebrow = intro?.querySelector<HTMLElement>('.eyebrow');
@@ -113,20 +169,13 @@ const animateServices = (section: HTMLElement, gsap: GsapInstance) => {
 
   if (!intro || !rows.length || !orbit) return;
 
-  gsap.set(orbit, { '--orbit-line-scale': 0 } as any);
-
   const timeline = gsap.timeline({ defaults: { ease: 'power3.out' } });
 
   timeline
-    .fromTo(eyebrow, { opacity: 0, y: 12 }, { opacity: 1, y: 0, duration: 0.4 })
-    .fromTo(title, { opacity: 0, y: 56, clipPath: 'inset(0 0 100% 0)' }, { opacity: 1, y: 0, clipPath: 'inset(0 0 0% 0)', duration: 0.82, ease: 'expo.out' }, '-=0.12')
-    .fromTo(description, { opacity: 0, y: 26 }, { opacity: 1, y: 0, duration: 0.56 }, '-=0.4')
-    .fromTo(
-      rows,
-      { opacity: 0, y: 34 },
-      { opacity: 1, y: 0, duration: 0.56, stagger: 0.105 },
-      '-=0.22',
-    );
+    .to(eyebrow, { opacity: 1, y: 0, duration: 0.4 })
+    .to(title, { opacity: 1, y: 0, clipPath: 'inset(0 0 0% 0)', duration: 0.82, ease: 'expo.out' }, '-=0.12')
+    .to(description, { opacity: 1, y: 0, duration: 0.56 }, '-=0.4')
+    .to(rows, { opacity: 1, y: 0, duration: 0.56, stagger: 0.105 }, '-=0.22');
 
   rows.forEach((row, rowIndex) => {
     const number = row.querySelector<HTMLElement>('span');
@@ -135,19 +184,14 @@ const animateServices = (section: HTMLElement, gsap: GsapInstance) => {
     const position = `-=${Math.max(0.48 - rowIndex * 0.02, 0.32)}`;
 
     timeline
-      .fromTo(number, { opacity: 0, x: -12 }, { opacity: 1, x: 0, duration: 0.28 }, position)
-      .fromTo(heading, { opacity: 0, x: -18 }, { opacity: 1, x: 0, duration: 0.36 }, '-=0.2')
-      .fromTo(text, { opacity: 0, x: 16 }, { opacity: 1, x: 0, duration: 0.4 }, '-=0.27');
+      .to(number, { opacity: 1, x: 0, duration: 0.28 }, position)
+      .to(heading, { opacity: 1, x: 0, duration: 0.36 }, '-=0.2')
+      .to(text, { opacity: 1, x: 0, duration: 0.4 }, '-=0.27');
   });
 
   timeline
     .to(orbit, { '--orbit-line-scale': 1, duration: 0.9, ease: 'power2.inOut' } as any, '-=0.72')
-    .fromTo(
-      orbitCards,
-      { opacity: 0, scale: 0.72, y: 24 },
-      { opacity: 1, scale: 1, y: 0, duration: 0.5, stagger: 0.15, ease: 'back.out(1.45)' },
-      '-=0.54',
-    )
+    .to(orbitCards, { opacity: 1, scale: 1, y: 0, duration: 0.5, stagger: 0.15, ease: 'back.out(1.45)' }, '-=0.54')
     .call(() => {
       orbitCards.forEach((card, indexValue) => {
         gsap.to(card, {
@@ -176,6 +220,12 @@ const waitForSections = (attempt = 0) => {
     revealDataElements(services);
     return;
   }
+
+  // Important: establish the hidden starting pose before either section can be
+  // seen. The old fromTo-only approach applied its "from" values at trigger
+  // time, so users saw the final text first and then watched it jump backward.
+  prepareArchitecture(architecture, gsap);
+  prepareServices(services, gsap);
 
   const observer = new IntersectionObserver(
     (entries, instance) => {
