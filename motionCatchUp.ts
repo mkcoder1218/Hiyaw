@@ -2,6 +2,10 @@ type GsapLike = {
   globalTimeline?: {
     timeScale: (value?: number) => any;
   };
+  ticker?: {
+    fps?: (value?: number) => any;
+  };
+  getTweensOf?: (targets: any) => any[];
 };
 
 declare global {
@@ -12,7 +16,9 @@ declare global {
 
 let installed = false;
 
-const BASE_SPEED = 1.15;
+// Keep the site a little quicker without changing speed while the user scrolls.
+// A stable time scale preserves every timeline's intended sequence.
+const BASE_SPEED = 1.12;
 
 const installIsolatedIntersectionObservers = () => {
   const NativeObserver = window.IntersectionObserver;
@@ -29,15 +35,15 @@ const installIsolatedIntersectionObservers = () => {
       : [typeof options.threshold === 'number' ? options.threshold : 0];
     const highestThreshold = Math.max(...thresholdValues);
 
-    // Entrance observers should fire only after their target has moved into the
-    // current viewport's active band. Full-page scenes keep their animation
-    // isolated so neighboring scenes do not start early.
+    // Entrance animations only become eligible inside the current viewport's
+    // active band. This prevents the next full-page scene from starting while
+    // the user is still watching the current one.
     const isEntranceObserver = !options.root && highestThreshold <= 0.35;
 
     const tunedOptions: IntersectionObserverInit = isEntranceObserver
       ? {
           ...options,
-          rootMargin: '-14% 0px -20% 0px',
+          rootMargin: '-12% 0px -18% 0px',
         }
       : options;
 
@@ -48,62 +54,72 @@ const installIsolatedIntersectionObservers = () => {
   (window as any).IntersectionObserver = MotionAwareObserver;
 };
 
-const installVelocityCatchUp = () => {
-  let lastY = window.scrollY;
-  let lastTime = performance.now();
-  let resetTimer = 0;
-  let framePending = false;
+const sceneSelectors = [
+  '.hero',
+  '.collaboration',
+  '.work > .section-head',
+  '.work > .project',
+  '.services',
+  '.surface-system',
+  '.why',
+  '.process',
+  '.about > .habesha-collage',
+  '.about > .founders',
+  '.insights',
+  '.contact',
+].join(',');
 
-  const setTimelineSpeed = (speed: number) => {
-    const timeline = window.gsap?.globalTimeline;
-    if (!timeline?.timeScale) return;
-    timeline.timeScale(speed);
+const installSceneLifecycle = (attempt = 0) => {
+  const gsap = window.gsap;
+  if (!gsap?.globalTimeline?.timeScale || !gsap.getTweensOf) {
+    if (attempt < 120) requestAnimationFrame(() => installSceneLifecycle(attempt + 1));
+    return;
+  }
+
+  gsap.globalTimeline.timeScale(BASE_SPEED);
+
+  // Low-end mobile devices were doing unnecessary work for every infinite
+  // float/orbit animation from all previously viewed sections. A slightly lower
+  // ticker rate is visually smooth on phones while reducing main-thread/GPU load.
+  if (window.matchMedia('(max-width: 760px)').matches) {
+    gsap.ticker?.fps?.(50);
+  }
+
+  const scenes = Array.from(document.querySelectorAll<HTMLElement>(sceneSelectors));
+  if (!scenes.length) return;
+
+  const tweensFor = (scene: HTMLElement) => {
+    const targets = [scene, ...Array.from(scene.querySelectorAll<HTMLElement>('*'))];
+    return gsap.getTweensOf?.(targets) ?? [];
   };
 
-  const applyBaseSpeed = (attempt = 0) => {
-    const timeline = window.gsap?.globalTimeline;
-    if (timeline?.timeScale) {
-      timeline.timeScale(BASE_SPEED);
-      return;
-    }
-
-    if (attempt < 120) requestAnimationFrame(() => applyBaseSpeed(attempt + 1));
+  const pauseScene = (scene: HTMLElement) => {
+    tweensFor(scene).forEach((tween) => {
+      if (typeof tween.pause === 'function') tween.pause();
+    });
   };
 
-  const settle = () => {
-    window.clearTimeout(resetTimer);
-    resetTimer = window.setTimeout(() => setTimelineSpeed(BASE_SPEED), 130);
+  const resumeScene = (scene: HTMLElement) => {
+    tweensFor(scene).forEach((tween) => {
+      if (typeof tween.resume === 'function') tween.resume();
+    });
   };
 
-  const sampleScroll = () => {
-    framePending = false;
+  const lifecycleObserver = new IntersectionObserver(
+    (entries) => {
+      entries.forEach((entry) => {
+        const scene = entry.target as HTMLElement;
+        if (entry.isIntersecting) resumeScene(scene);
+        else pauseScene(scene);
+      });
+    },
+    {
+      threshold: 0,
+      rootMargin: '8% 0px 8% 0px',
+    },
+  );
 
-    const now = performance.now();
-    const y = window.scrollY;
-    const elapsed = Math.max(now - lastTime, 16);
-    const velocity = Math.abs(y - lastY) / elapsed;
-
-    // Keep the normal choreography slightly faster everywhere, then add only a
-    // modest temporary boost while the user scrolls quickly.
-    if (velocity > 3.0) setTimelineSpeed(2.55);
-    else if (velocity > 1.7) setTimelineSpeed(2.05);
-    else if (velocity > 0.9) setTimelineSpeed(1.68);
-    else if (velocity > 0.45) setTimelineSpeed(1.38);
-    else setTimelineSpeed(BASE_SPEED);
-
-    lastY = y;
-    lastTime = now;
-    settle();
-  };
-
-  const onScroll = () => {
-    if (framePending) return;
-    framePending = true;
-    requestAnimationFrame(sampleScroll);
-  };
-
-  window.addEventListener('scroll', onScroll, { passive: true });
-  applyBaseSpeed();
+  scenes.forEach((scene) => lifecycleObserver.observe(scene));
 };
 
 export const initMotionCatchUp = () => {
@@ -118,9 +134,8 @@ export const initMotionCatchUp = () => {
   }
 
   // Install before section-specific motion modules create their observers.
-  // This keeps each full-page scene responsible for its own entrance.
   installIsolatedIntersectionObservers();
-  installVelocityCatchUp();
+  installSceneLifecycle();
 };
 
 export {};
