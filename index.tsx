@@ -13,6 +13,7 @@ import './selected-work-redesign.css';
 import './nav-scrollspy.css';
 import './mobile-responsive-fixes.css';
 import './viewport-scenes.css';
+import './mobile-about-stability.css';
 import App from './App';
 import { initHeroMotion } from './heroMotion';
 import { initCollaborationMotion } from './collaborationMotion';
@@ -33,9 +34,8 @@ if (!rootElement) {
   throw new Error("Could not find root element to mount to");
 }
 
-// Install this before React mounts the collage. The MutationObserver swaps the
-// legacy image sources during the same DOM commit, so cached old photos cannot
-// flash back onto the page while React is rendering.
+// Install this before React mounts the collage. The observer only survives the
+// initial mount and then disconnects so it cannot compete with GSAP on mobile.
 initHabeshaCollageSwap();
 
 // Keep the public contact information authoritative even though the richer
@@ -49,9 +49,9 @@ root.render(
   </React.StrictMode>
 );
 
-// Install the observer isolation before any section-specific motion module.
-// Each viewport scene now owns its own trigger, while fast scrolling only
-// speeds up the animation that is already playing.
+// Install the scene isolation before section-specific motion modules. Offscreen
+// perpetual animations are paused, and every active timeline keeps one stable
+// slightly-faster speed so choreography cannot reorder while scrolling.
 initMotionCatchUp();
 
 initHeroMotion();
